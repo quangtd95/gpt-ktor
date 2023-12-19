@@ -12,6 +12,7 @@ import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.defaultheaders.*
+import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
@@ -52,6 +53,10 @@ fun Application.module() {
 
     val factory: IDatabaseFactory by inject()
     factory.init()
+
+    install(StatusPages) {
+        statusPages()
+    }
 
     routing {
         api(simpleJWT)
