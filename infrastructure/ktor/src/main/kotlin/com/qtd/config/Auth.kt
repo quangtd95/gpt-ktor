@@ -8,7 +8,7 @@ import io.ktor.server.response.*
 
 fun AuthenticationConfig.jwtConfig(simpleJWT: SimpleJWT) {
     jwt {
-        realm = simpleJWT.realm
+        realm = simpleJWT.jwtConfig.realm
         verifier(simpleJWT.verifier)
         validate {
             UserIdPrincipal(it.payload.getClaim("id").asString())

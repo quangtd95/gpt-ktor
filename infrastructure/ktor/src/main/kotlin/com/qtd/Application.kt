@@ -23,6 +23,9 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    val config = extractConfig(environment)
+    val simpleJWT = SimpleJWT(config.jwtConfig)
+
     install(DefaultHeaders)
     install(CORS) {
         cors()
@@ -31,15 +34,10 @@ fun Application.module() {
         level = Level.INFO
     }
 
-    val simpleJWT = SimpleJWT(
-        secret = this@module.environment.config.property("jwt.secret").getString(),
-        realm = this@module.environment.config.property("jwt.realm").getString(),
-        issuer = this@module.environment.config.property("jwt.issuer").getString(),
-        audience = this@module.environment.config.property("jwt.audience").getString()
-    )
     install(Authentication) {
         jwtConfig(simpleJWT)
     }
+
     install(ContentNegotiation) {
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)
@@ -60,5 +58,17 @@ fun Application.module() {
 
     routing {
         api(simpleJWT)
+    }
+}
+
+fun extractConfig(environment: ApplicationEnvironment) = config {
+    applicationConfig {
+        port = environment.config.property("ktor.deployment.port").getString().toInt()
+    }
+    jwtConfig {
+        secret = environment.config.property("jwt.secret").getString()
+        realm = environment.config.property("jwt.realm").getString()
+        issuer = environment.config.property("jwt.issuer").getString()
+        audience = environment.config.property("jwt.audience").getString()
     }
 }
