@@ -14,6 +14,7 @@ import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.routing.*
+import org.koin.dsl.module
 import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
 import org.slf4j.event.Level
@@ -45,8 +46,13 @@ fun Application.module() {
     }
 
     install(Koin) {
-        modules(serviceKoinModule)
-        modules(databaseKoinModule)
+        modules(
+            module {
+                single { config }
+            },
+            serviceKoinModule,
+            databaseKoinModule
+        )
     }
 
     val factory: IDatabaseFactory by inject()
@@ -70,5 +76,12 @@ fun extractConfig(environment: ApplicationEnvironment) = config {
         realm = environment.config.property("jwt.realm").getString()
         issuer = environment.config.property("jwt.issuer").getString()
         audience = environment.config.property("jwt.audience").getString()
+    }
+    databaseConfig {
+        driverClassName = environment.config.property("database.driverClassName").getString()
+        jdbcUrl = environment.config.property("database.jdbcUrl").getString()
+        maximumPoolSize = environment.config.property("database.maximumPoolSize").getString().toInt()
+        isAutoCommit = environment.config.property("database.isAutoCommit").getString().toBoolean()
+        transactionIsolation = environment.config.property("database.transactionIsolation").getString()
     }
 }

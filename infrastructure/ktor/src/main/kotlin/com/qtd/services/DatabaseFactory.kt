@@ -1,5 +1,6 @@
 package com.qtd.services
 
+import com.qtd.config.Config
 import com.qtd.models.Followings
 import com.qtd.models.Users
 import com.zaxxer.hikari.HikariConfig
@@ -9,7 +10,9 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.SchemaUtils.drop
-import java.util.concurrent.Executors
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
 
 interface IDatabaseFactory {
     fun init()
@@ -18,7 +21,8 @@ interface IDatabaseFactory {
 }
 
 @OptIn(DelicateCoroutinesApi::class)
-class DatabaseFactory : IDatabaseFactory {
+class DatabaseFactory : IDatabaseFactory, KoinComponent {
+    private val config by inject<Config>()
     private val dispatcher: CoroutineDispatcher = newFixedThreadPoolContext(5, "database-pool")
 
     override fun init() {
@@ -29,16 +33,15 @@ class DatabaseFactory : IDatabaseFactory {
     }
 
     private fun hikari(): HikariDataSource {
+        val dbConfig = config.databaseConfig
         HikariConfig().run {
-            driverClassName = "org.h2.Driver"
-            jdbcUrl = "jdbc:h2:file:./gpt.h2"
-            maximumPoolSize = 3
-            isAutoCommit = false
-            transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+            driverClassName = dbConfig.driverClassName
+            jdbcUrl = dbConfig.jdbcUrl
+            maximumPoolSize = dbConfig.maximumPoolSize
+            isAutoCommit = dbConfig.isAutoCommit
+            transactionIsolation = dbConfig.transactionIsolation
             return HikariDataSource(this)
         }
-
-
     }
 
     override suspend fun <T> dbQuery(block: () -> T): T = withContext(dispatcher) {
