@@ -11,7 +11,7 @@ fun AuthenticationConfig.jwtConfig(simpleJWT: SimpleJWT) {
         realm = simpleJWT.realm
         verifier(simpleJWT.verifier)
         validate {
-            JWTPrincipal(it.payload)
+            UserIdPrincipal(it.payload.getClaim("id").asString())
         }
         challenge { defaultScheme, realm ->
             call.respond(

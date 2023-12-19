@@ -12,6 +12,7 @@ import java.util.*
 interface IAuthService {
     suspend fun register(registerUser: RegisterUser): User
     suspend fun loginAndGetUser(email: String, password: String): User
+    suspend fun getUserById(id: String): User
 }
 
 class AuthService(private val databaseFactory: IDatabaseFactory) : IAuthService {
@@ -34,6 +35,12 @@ class AuthService(private val databaseFactory: IDatabaseFactory) : IAuthService 
             User.find {
                 (Users.email eq email) and (Users.password eq password)
             }.firstOrNull() ?: throw UserDoesNotExists()
+        }
+    }
+
+    override suspend fun getUserById(id: String): User {
+        return databaseFactory.dbQuery {
+            getUser(id)
         }
     }
 
