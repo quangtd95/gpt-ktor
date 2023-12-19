@@ -1,21 +1,22 @@
-package com.qtd.modules.auth
+package com.qtd.modules.auth.services
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.JWTVerifier
 import com.qtd.config.JwtConfig
-import com.qtd.models.User
+import com.qtd.modules.auth.dto.Credentials
+import com.qtd.modules.auth.models.User
 import java.util.*
 
 
-interface ITokenProvider {
-    fun createTokens(user: User): CredentialsResponse
+interface ITokenService {
+    fun createTokens(user: User): Credentials
     fun verifyToken(token: String): String?
     fun getTokenVerifier(): JWTVerifier
 }
 
 
-class TokenProvider(private val jwtConfig: JwtConfig) : ITokenProvider {
+class TokenService(private val jwtConfig: JwtConfig) : ITokenService {
     private val algorithm = Algorithm.HMAC512(jwtConfig.secret)
     private val validityInMs: Long = 3600000L * 24L // 24h
     private val refreshValidityInMs: Long = 3600000L * 24L * 30L // 30 days
@@ -36,7 +37,7 @@ class TokenProvider(private val jwtConfig: JwtConfig) : ITokenProvider {
         .withExpiresAt(expiration)
         .sign(algorithm)
 
-    override fun createTokens(user: User) = CredentialsResponse(
+    override fun createTokens(user: User) = Credentials(
         accessToken = createToken(user, Date(System.currentTimeMillis() + validityInMs)),
         refreshToken = createToken(user, Date(System.currentTimeMillis() + refreshValidityInMs))
     )

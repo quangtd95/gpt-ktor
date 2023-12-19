@@ -1,35 +1,36 @@
-package com.qtd.api
+package com.qtd.modules.auth.api
 
-import com.qtd.models.LoginUser
-import com.qtd.models.RegisterUser
-import com.qtd.models.UpdateUser
-import com.qtd.models.UserResponse
-import com.qtd.services.IAuthService
-import com.qtd.utils.SimpleJWT
+import com.qtd.modules.auth.services.AuthUseCase
+import com.qtd.modules.auth.dto.LoginUser
+import com.qtd.modules.auth.dto.RegisterUser
+import com.qtd.modules.auth.dto.UpdateUser
+import com.qtd.modules.auth.dto.UserResponse
 import com.qtd.utils.userId
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.koin.ktor.ext.inject
 
-fun Route.auth(authService: IAuthService, simpleJWT: SimpleJWT) {
+fun Route.auth() {
+    val authService: AuthUseCase by inject()
 
     post("/users") {
         val registerUser = call.receive<RegisterUser>()
         val newUser = authService.register(registerUser)
-        call.respond(UserResponse.fromUser(newUser, token = simpleJWT.sign(newUser.id)))
+        call.respond(newUser)
     }
 
     post("/users/login") {
         val loginUser = call.receive<LoginUser>()
         val user = authService.loginAndGetUser(loginUser.user.email, loginUser.user.password)
-        call.respond(UserResponse.fromUser(user, token = simpleJWT.sign(user.id)))
+        call.respond(user)
     }
 
     get("/users") {
         val users = authService.getAllUsers()
-        call.respond(users.map{ UserResponse.fromUser(it)})
+        call.respond(users.map { UserResponse.fromUser(it) })
     }
 
     authenticate("jwt") {
@@ -41,7 +42,7 @@ fun Route.auth(authService: IAuthService, simpleJWT: SimpleJWT) {
         put("/user") {
             val updateUser = call.receive<UpdateUser>()
             val user = authService.updateUser(call.userId(), updateUser)
-            call.respond(UserResponse.fromUser(user, token = simpleJWT.sign(user.id)))
+            call.respond(UserResponse.fromUser(user))
         }
     }
 }

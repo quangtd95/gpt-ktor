@@ -1,8 +1,8 @@
-package com.qtd.services
+package com.qtd.modules.database
 
 import com.qtd.config.Config
-import com.qtd.models.Followings
-import com.qtd.models.Users
+import com.qtd.modules.auth.models.Followings
+import com.qtd.modules.auth.models.Users
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.*

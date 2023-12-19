@@ -1,14 +1,17 @@
-package com.qtd.api
+package com.qtd.modules.profile.api
 
-import com.qtd.services.IProfileService
+import com.qtd.modules.profile.services.IProfileService
 import com.qtd.utils.param
 import com.qtd.utils.userId
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.koin.ktor.ext.inject
 
-fun Route.profile(profileService: IProfileService) {
+fun Route.profile() {
+    val profileService: IProfileService by inject()
+
     authenticate("jwt", optional = true) {
         get("/profiles/{username}") {
             val username = call.param("username")

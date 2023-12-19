@@ -1,7 +1,10 @@
-package com.qtd.services
+package com.qtd.modules.profile.services
 
-import com.qtd.models.ProfileResponse
-import com.qtd.models.User
+import com.qtd.modules.database.IDatabaseFactory
+import com.qtd.modules.profile.models.ProfileResponse
+import com.qtd.modules.auth.models.User
+import com.qtd.modules.auth.services.getUser
+import com.qtd.modules.auth.services.getUserByUsername
 import com.qtd.utils.UserDoesNotExists
 import org.jetbrains.exposed.sql.SizedCollection
 

@@ -3,11 +3,12 @@ package com.qtd
 import com.auth0.jwt.interfaces.JWTVerifier
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.qtd.config.*
-import com.qtd.modules.auth.ITokenProvider
-import com.qtd.modules.auth.TokenProvider
-import com.qtd.modules.auth.authenticationModule
-import com.qtd.services.IDatabaseFactory
-import com.qtd.utils.SimpleJWT
+import com.qtd.modules.auth.config.jwtConfig
+import com.qtd.modules.auth.services.IPasswordService
+import com.qtd.modules.auth.services.ITokenService
+import com.qtd.modules.auth.services.PasswordService
+import com.qtd.modules.auth.services.TokenService
+import com.qtd.modules.database.IDatabaseFactory
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -29,14 +30,14 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     val config = extractConfig(environment)
-    val simpleJWT = SimpleJWT(config.jwtConfig)
 
     install(Koin) {
         modules(
             module {
                 single { config }
-                single<ITokenProvider> { TokenProvider(get<Config>().jwtConfig) }
-                single<JWTVerifier> { get<ITokenProvider>().getTokenVerifier() }
+                single<ITokenService> { TokenService(get<Config>().jwtConfig) }
+                single<JWTVerifier> { get<ITokenService>().getTokenVerifier() }
+                single<IPasswordService> { PasswordService }
             },
             serviceKoinModule,
             databaseKoinModule
@@ -54,7 +55,7 @@ fun Application.module() {
     }
 
     install(Authentication) {
-        authenticationModule(config.jwtConfig, tokenJWTVerifier)
+        jwtConfig(config.jwtConfig, tokenJWTVerifier)
     }
 
     install(ContentNegotiation) {
@@ -71,7 +72,7 @@ fun Application.module() {
     }
 
     routing {
-        api(simpleJWT)
+        api()
     }
 }
 
