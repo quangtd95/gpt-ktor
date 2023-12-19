@@ -15,6 +15,7 @@ interface IAuthService {
     suspend fun loginAndGetUser(email: String, password: String): User
     suspend fun getUserById(id: String): User
     suspend fun updateUser(id: String, updateUser: UpdateUser): User
+    suspend fun getAllUsers(): List<User>
 }
 
 class AuthService(private val databaseFactory: IDatabaseFactory) : IAuthService {
@@ -56,6 +57,12 @@ class AuthService(private val databaseFactory: IDatabaseFactory) : IAuthService 
                 image = updateUser.user.image ?: image
                 bio = updateUser.user.bio ?: bio
             }
+        }
+    }
+
+    override suspend fun getAllUsers(): List<User> {
+        return databaseFactory.dbQuery {
+            User.all().toList()
         }
     }
 

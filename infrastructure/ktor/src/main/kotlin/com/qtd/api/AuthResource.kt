@@ -27,6 +27,11 @@ fun Route.auth(authService: IAuthService, simpleJWT: SimpleJWT) {
         call.respond(UserResponse.fromUser(user, token = simpleJWT.sign(user.id)))
     }
 
+    get("/users") {
+        val users = authService.getAllUsers()
+        call.respond(users.map{ UserResponse.fromUser(it)})
+    }
+
     authenticate {
         get("/user") {
             val user = authService.getUserById(call.userId())
