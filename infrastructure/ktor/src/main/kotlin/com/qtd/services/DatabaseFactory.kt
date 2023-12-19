@@ -1,5 +1,6 @@
 package com.qtd.services
 
+import com.qtd.models.Followings
 import com.qtd.models.Users
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -22,14 +23,14 @@ class DatabaseFactory : IDatabaseFactory {
     override fun init() {
         Database.connect(hikari())
         transaction {
-            create(Users)
+            create(Users, Followings)
         }
     }
 
     private fun hikari(): HikariDataSource {
         val config = HikariConfig().apply {
             driverClassName = "org.h2.Driver"
-            jdbcUrl = "jdbc:h2:mem:~gpt"
+            jdbcUrl = "jdbc:h2:file:./gpt.h2"
             maximumPoolSize = 3
             isAutoCommit = false
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"
@@ -43,7 +44,7 @@ class DatabaseFactory : IDatabaseFactory {
     }
 
     override suspend fun drop() {
-        dbQuery { drop(Users) }
+        dbQuery { drop(Users, Followings) }
     }
 
 }

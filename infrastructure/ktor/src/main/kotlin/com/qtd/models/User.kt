@@ -14,6 +14,11 @@ object Users : UUIDTable() {
     val password = varchar("password", 255)
 }
 
+object Followings : UUIDTable() {
+    val userId = reference("userId", Users)
+    val followerId = reference("followerId", Users)
+}
+
 class User(id: EntityID<UUID>) : UUIDEntity(id) {
     companion object : UUIDEntityClass<User>(Users)
 
@@ -22,7 +27,7 @@ class User(id: EntityID<UUID>) : UUIDEntity(id) {
     var bio by Users.bio
     var image by Users.image
     var password by Users.password
-//    var followers by User.via(Followings.userId, Followings.followerId)
+    var followers by User.via(Followings.userId, Followings.followerId)
 }
 
 data class RegisterUser(val user: User) {

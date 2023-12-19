@@ -69,3 +69,5 @@ class AuthService(private val databaseFactory: IDatabaseFactory) : IAuthService 
 }
 
 fun getUser(id: String) = User.findById(UUID.fromString(id)) ?: throw UserDoesNotExists()
+
+fun getUserByUsername(username: String) = User.find { Users.username eq username }.firstOrNull()
