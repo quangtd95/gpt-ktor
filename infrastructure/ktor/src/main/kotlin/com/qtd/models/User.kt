@@ -29,6 +29,10 @@ data class RegisterUser(val user: User) {
     data class User(val email: String, val username: String, val password: String)
 }
 
+data class LoginUser(val user: User) {
+    data class User(val email: String, val password: String)
+}
+
 data class UserResponse(val user: User) {
     data class User(
         val email: String,

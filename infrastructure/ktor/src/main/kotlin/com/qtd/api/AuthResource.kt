@@ -1,5 +1,6 @@
 package com.qtd.api
 
+import com.qtd.models.LoginUser
 import com.qtd.models.RegisterUser
 import com.qtd.models.UserResponse
 import com.qtd.services.IAuthService
@@ -15,5 +16,11 @@ fun Route.auth(authService: IAuthService, simpleJWT: SimpleJWT) {
         val registerUser = call.receive<RegisterUser>()
         val newUser = authService.register(registerUser)
         call.respond(UserResponse.fromUser(newUser, token = simpleJWT.sign(newUser.id)))
+    }
+
+    post("/users/login") {
+        val loginUser = call.receive<LoginUser>()
+        val user = authService.loginAndGetUser(loginUser.user.email, loginUser.user.password)
+        call.respond(UserResponse.fromUser(user, token = simpleJWT.sign(user.id)))
     }
 }
