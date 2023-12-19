@@ -2,6 +2,7 @@ package com.qtd.api
 
 import com.qtd.models.LoginUser
 import com.qtd.models.RegisterUser
+import com.qtd.models.UpdateUser
 import com.qtd.models.UserResponse
 import com.qtd.services.IAuthService
 import com.qtd.utils.SimpleJWT
@@ -30,6 +31,12 @@ fun Route.auth(authService: IAuthService, simpleJWT: SimpleJWT) {
         get("/user") {
             val user = authService.getUserById(call.userId())
             call.respond(UserResponse.fromUser(user))
+        }
+
+        put("/user") {
+            val updateUser = call.receive<UpdateUser>()
+            val user = authService.updateUser(call.userId(), updateUser)
+            call.respond(UserResponse.fromUser(user, token = simpleJWT.sign(user.id)))
         }
     }
 }

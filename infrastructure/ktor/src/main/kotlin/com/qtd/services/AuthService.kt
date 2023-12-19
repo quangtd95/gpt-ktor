@@ -1,6 +1,7 @@
 package com.qtd.services
 
 import com.qtd.models.RegisterUser
+import com.qtd.models.UpdateUser
 import com.qtd.models.User
 import com.qtd.models.Users
 import com.qtd.utils.UserDoesNotExists
@@ -13,6 +14,7 @@ interface IAuthService {
     suspend fun register(registerUser: RegisterUser): User
     suspend fun loginAndGetUser(email: String, password: String): User
     suspend fun getUserById(id: String): User
+    suspend fun updateUser(id: String, updateUser: UpdateUser): User
 }
 
 class AuthService(private val databaseFactory: IDatabaseFactory) : IAuthService {
@@ -41,6 +43,19 @@ class AuthService(private val databaseFactory: IDatabaseFactory) : IAuthService 
     override suspend fun getUserById(id: String): User {
         return databaseFactory.dbQuery {
             getUser(id)
+        }
+    }
+
+    override suspend fun updateUser(id: String, updateUser: UpdateUser): User {
+        return databaseFactory.dbQuery {
+            val user = getUser(id)
+            user.apply {
+                email = updateUser.user.email ?: email
+                password = updateUser.user.password ?: password
+                username = updateUser.user.username ?: username
+                image = updateUser.user.image ?: image
+                bio = updateUser.user.bio ?: bio
+            }
         }
     }
 
