@@ -32,7 +32,7 @@ fun Route.auth(authService: IAuthService, simpleJWT: SimpleJWT) {
         call.respond(users.map{ UserResponse.fromUser(it)})
     }
 
-    authenticate {
+    authenticate("jwt") {
         get("/user") {
             val user = authService.getUserById(call.userId())
             call.respond(UserResponse.fromUser(user))

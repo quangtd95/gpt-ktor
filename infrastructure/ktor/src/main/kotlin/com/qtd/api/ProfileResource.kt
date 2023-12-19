@@ -9,7 +9,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.profile(profileService: IProfileService) {
-    authenticate(optional = true) {
+    authenticate("jwt", optional = true) {
         get("/profiles/{username}") {
             val username = call.param("username")
             val currentUserId = call.principal<UserIdPrincipal>()?.name
@@ -18,7 +18,7 @@ fun Route.profile(profileService: IProfileService) {
         }
     }
 
-    authenticate {
+    authenticate("jwt") {
         post("/profiles/{username}/follow") {
             val username = call.param("username")
             val currentUserId = call.userId()

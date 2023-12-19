@@ -1,7 +1,11 @@
 package com.qtd
 
+import com.auth0.jwt.interfaces.JWTVerifier
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.qtd.config.*
+import com.qtd.modules.auth.ITokenProvider
+import com.qtd.modules.auth.TokenProvider
+import com.qtd.modules.auth.authenticationModule
 import com.qtd.services.IDatabaseFactory
 import com.qtd.utils.SimpleJWT
 import io.ktor.serialization.jackson.*
@@ -27,6 +31,20 @@ fun Application.module() {
     val config = extractConfig(environment)
     val simpleJWT = SimpleJWT(config.jwtConfig)
 
+    install(Koin) {
+        modules(
+            module {
+                single { config }
+                single<ITokenProvider> { TokenProvider(get<Config>().jwtConfig) }
+                single<JWTVerifier> { get<ITokenProvider>().getTokenVerifier() }
+            },
+            serviceKoinModule,
+            databaseKoinModule
+        )
+    }
+
+    val tokenJWTVerifier: JWTVerifier by inject()
+
     install(DefaultHeaders)
     install(CORS) {
         cors()
@@ -36,23 +54,13 @@ fun Application.module() {
     }
 
     install(Authentication) {
-        jwtConfig(simpleJWT)
+        authenticationModule(config.jwtConfig, tokenJWTVerifier)
     }
 
     install(ContentNegotiation) {
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)
         }
-    }
-
-    install(Koin) {
-        modules(
-            module {
-                single { config }
-            },
-            serviceKoinModule,
-            databaseKoinModule
-        )
     }
 
     val factory: IDatabaseFactory by inject()
