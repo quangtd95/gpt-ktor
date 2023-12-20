@@ -2,6 +2,7 @@ package com.qtd.modules.database
 
 import com.qtd.config.ApplicationConfig
 import com.qtd.modules.auth.models.Followings
+import com.qtd.modules.auth.models.RefreshTokens
 import com.qtd.modules.auth.models.Users
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -28,7 +29,7 @@ class DatabaseProvider : IDatabaseProvider, KoinComponent {
     override fun init() {
         Database.connect(hikari())
         transaction {
-            create(Users, Followings)
+            create(Users, Followings, RefreshTokens)
         }
     }
 
@@ -49,7 +50,7 @@ class DatabaseProvider : IDatabaseProvider, KoinComponent {
     }
 
     override suspend fun drop() {
-        dbQuery { drop(Users, Followings) }
+        dbQuery { drop(Users, Followings, RefreshTokens) }
     }
 
 }

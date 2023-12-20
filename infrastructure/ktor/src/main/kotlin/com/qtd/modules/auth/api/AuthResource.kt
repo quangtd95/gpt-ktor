@@ -1,6 +1,6 @@
 package com.qtd.modules.auth.api
 
-import com.qtd.modules.auth.services.AuthUseCase
+import com.qtd.modules.auth.service.AuthUseCase
 import com.qtd.modules.auth.dto.LoginUser
 import com.qtd.modules.auth.dto.RegisterUser
 import com.qtd.modules.auth.dto.UpdateUser

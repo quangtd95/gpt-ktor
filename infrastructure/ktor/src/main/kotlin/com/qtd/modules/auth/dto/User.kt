@@ -24,23 +24,43 @@ data class UserResponse(val user: User) {
         val username: String,
         val bio: String,
         val image: String?,
-        val accessToken: String,
-        val refreshToken: String,
     )
 
     companion object {
         fun fromUser(
             user: com.qtd.modules.auth.models.User,
-            credentials: Credentials? = null,
         ): UserResponse = UserResponse(
             User(
                 email = user.email,
-                accessToken = credentials?.accessToken ?: "",
-                refreshToken = credentials?.refreshToken ?: "",
                 username = user.username,
                 bio = user.bio,
                 image = user.image
             )
         )
+    }
+}
+
+data class UserCredentialsResponse(val user: User) {
+    data class User(
+        val email: String,
+        val username: String,
+        val bio: String,
+        val image: String?,
+        val accessToken: String?,
+        val refreshToken: String?,
+    )
+
+    companion object {
+        fun fromUser(user: com.qtd.modules.auth.models.User, credentials: Credentials? = null) =
+            UserCredentialsResponse(
+                User(
+                    email = user.email,
+                    accessToken = credentials?.accessToken,
+                    refreshToken = credentials?.refreshToken,
+                    username = user.username,
+                    bio = user.bio,
+                    image = user.image
+                )
+            )
     }
 }

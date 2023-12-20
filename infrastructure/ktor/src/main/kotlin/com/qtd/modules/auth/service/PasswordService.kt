@@ -1,4 +1,4 @@
-package com.qtd.modules.auth.services
+package com.qtd.modules.auth.service
 
 import org.mindrot.jbcrypt.BCrypt
 import java.security.SecureRandom

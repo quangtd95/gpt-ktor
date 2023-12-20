@@ -3,8 +3,8 @@ package com.qtd.modules.profile.services
 import com.qtd.modules.database.IDatabaseProvider
 import com.qtd.modules.profile.models.ProfileResponse
 import com.qtd.modules.auth.models.User
-import com.qtd.modules.auth.services.getUser
-import com.qtd.modules.auth.services.getUserByUsername
+import com.qtd.modules.auth.service.getUser
+import com.qtd.modules.auth.service.getUserByUsername
 import com.qtd.utils.UserDoesNotExists
 import org.jetbrains.exposed.sql.SizedCollection
 

@@ -1,7 +1,7 @@
 package com.qtd.config
 
 import com.auth0.jwt.interfaces.JWTVerifier
-import com.qtd.modules.auth.services.*
+import com.qtd.modules.auth.service.*
 import com.qtd.modules.database.DatabaseProvider
 import com.qtd.modules.database.IDatabaseProvider
 import com.qtd.modules.profile.services.IProfileService

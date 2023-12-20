@@ -8,7 +8,8 @@ fun extractConfig(hoconConfig: HoconApplicationConfig) = config {
     }
     jwt {
         with(hoconConfig.config("jwt")) {
-            secret = property("secret").getString()
+            accessTokenSecretKey = property("accessTokenSecretKey").getString()
+            refreshTokenSecretKey = property("refreshTokenSecretKey").getString()
             realm = property("realm").getString()
             issuer = property("issuer").getString()
             audience = property("audience").getString()
