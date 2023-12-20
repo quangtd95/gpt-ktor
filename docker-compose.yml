@@ -4,6 +4,16 @@ volumes:
   db:
 
 services:
+  web:
+    build: .
+    image: quangtd95/ktor-gpt:1.0.0
+    environment:
+      - DATABASE_URL=jdbc:postgresql://db:5432/gpt?user=gpt&password=gpt
+    ports:
+      - "8989:8989"
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     env_file:
       - .env
@@ -13,3 +23,6 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U gpt" ]
+      interval: 1s

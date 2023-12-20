@@ -8,7 +8,6 @@ import com.qtd.config.statusPages
 import com.qtd.modules.api
 import com.qtd.modules.auth.config.jwtConfig
 import com.qtd.modules.database.IDatabaseProvider
-import io.ktor.server.resources.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
