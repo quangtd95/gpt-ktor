@@ -3,11 +3,12 @@ package com.qtd
 import com.auth0.jwt.interfaces.JWTVerifier
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.qtd.config.ApplicationConfig
-import com.qtd.modules.api
 import com.qtd.config.cors
 import com.qtd.config.statusPages
+import com.qtd.modules.api
 import com.qtd.modules.auth.config.jwtConfig
 import com.qtd.modules.database.IDatabaseProvider
+import io.ktor.server.resources.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

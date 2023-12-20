@@ -2,6 +2,7 @@ package com.qtd
 
 import com.qtd.config.*
 import com.qtd.modules.auth.config.authKoinModule
+import com.qtd.modules.conversation.config.conversationKoinModule
 import com.qtd.modules.database.config.databaseKoinModule
 import com.qtd.modules.profile.config.profileKoinModule
 import com.typesafe.config.ConfigFactory
@@ -25,6 +26,7 @@ fun main(args: Array<String>) {
                     databaseKoinModule,
                     authKoinModule,
                     profileKoinModule,
+                    conversationKoinModule,
                 )
             }
         }

@@ -4,6 +4,8 @@ import com.qtd.config.ApplicationConfig
 import com.qtd.modules.auth.model.Followings
 import com.qtd.modules.auth.model.RefreshTokens
 import com.qtd.modules.auth.model.Users
+import com.qtd.modules.conversation.model.ConversationMessages
+import com.qtd.modules.conversation.model.Conversations
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.*
@@ -29,7 +31,7 @@ class DatabaseProvider : IDatabaseProvider, KoinComponent {
     override fun init() {
         Database.connect(hikari())
         transaction {
-            create(Users, Followings, RefreshTokens)
+            create(Users, Followings, RefreshTokens, Conversations, ConversationMessages)
         }
     }
 
@@ -52,7 +54,7 @@ class DatabaseProvider : IDatabaseProvider, KoinComponent {
     }
 
     override suspend fun drop() {
-        dbQuery { drop(Users, Followings, RefreshTokens) }
+        dbQuery { drop(Users, Followings, RefreshTokens, Conversations, ConversationMessages) }
     }
 
 }

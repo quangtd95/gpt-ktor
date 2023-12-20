@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.javatime.datetime
 import java.time.LocalDateTime
 import java.util.*
 
-object RefreshTokens : UUIDTable(), IRefreshTokenDao {
+object RefreshTokens : UUIDTable("refresh_tokens"), IRefreshTokenDao {
     val token = varchar("token", 1000).uniqueIndex()
     val userId = uuid("user_id").references(Users.id)
     val expiresAt = datetime("expires_at")

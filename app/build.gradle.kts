@@ -48,5 +48,8 @@ dependencies {
 
     implementation("org.mindrot:jbcrypt:0.4")
 
+    implementation("com.aallam.openai:openai-client:3.6.2")
+    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
+
     implementation("io.insert-koin", "koin-ktor", "3.4.0")
 }
