@@ -1,19 +1,18 @@
 package com.qtd.modules.auth.config
 
 import com.auth0.jwt.interfaces.JWTVerifier
-import com.qtd.config.JwtConfig
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 
 fun AuthenticationConfig.jwtConfig(
-    jwtConfig: JwtConfig,
+    env: JwtConfig,
     tokenVerifier: JWTVerifier
 ) {
     jwt("jwt") {
         verifier(tokenVerifier)
-        realm = jwtConfig.realm
+        realm = env.realm
 
         validate {
             UserIdPrincipal(it.payload.getClaim("id").asString())

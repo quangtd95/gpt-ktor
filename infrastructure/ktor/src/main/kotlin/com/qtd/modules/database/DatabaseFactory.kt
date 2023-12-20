@@ -1,6 +1,6 @@
 package com.qtd.modules.database
 
-import com.qtd.config.Config
+import com.qtd.config.ApplicationConfig
 import com.qtd.modules.auth.models.Followings
 import com.qtd.modules.auth.models.Users
 import com.zaxxer.hikari.HikariConfig
@@ -22,7 +22,7 @@ interface IDatabaseFactory {
 
 @OptIn(DelicateCoroutinesApi::class)
 class DatabaseFactory : IDatabaseFactory, KoinComponent {
-    private val config by inject<Config>()
+    private val applicationConfig by inject<ApplicationConfig>()
     private val dispatcher: CoroutineDispatcher = newFixedThreadPoolContext(5, "database-pool")
 
     override fun init() {
@@ -33,7 +33,7 @@ class DatabaseFactory : IDatabaseFactory, KoinComponent {
     }
 
     private fun hikari(): HikariDataSource {
-        val dbConfig = config.databaseConfig
+        val dbConfig = applicationConfig.databaseConfig
         HikariConfig().run {
             driverClassName = dbConfig.driverClassName
             jdbcUrl = dbConfig.jdbcUrl

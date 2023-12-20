@@ -3,7 +3,7 @@ package com.qtd.modules.auth.services
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.JWTVerifier
-import com.qtd.config.JwtConfig
+import com.qtd.modules.auth.config.JwtConfig
 import com.qtd.modules.auth.dto.Credentials
 import com.qtd.modules.auth.models.User
 import java.util.*
