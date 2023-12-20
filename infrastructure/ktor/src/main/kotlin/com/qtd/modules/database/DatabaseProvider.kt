@@ -14,14 +14,14 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 
-interface IDatabaseFactory {
+interface IDatabaseProvider {
     fun init()
     suspend fun <T> dbQuery(block: () -> T): T
     suspend fun drop()
 }
 
 @OptIn(DelicateCoroutinesApi::class)
-class DatabaseFactory : IDatabaseFactory, KoinComponent {
+class DatabaseProvider : IDatabaseProvider, KoinComponent {
     private val applicationConfig by inject<ApplicationConfig>()
     private val dispatcher: CoroutineDispatcher = newFixedThreadPoolContext(5, "database-pool")
 

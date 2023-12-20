@@ -1,6 +1,6 @@
 package com.qtd.modules.profile.services
 
-import com.qtd.modules.database.IDatabaseFactory
+import com.qtd.modules.database.IDatabaseProvider
 import com.qtd.modules.profile.models.ProfileResponse
 import com.qtd.modules.auth.models.User
 import com.qtd.modules.auth.services.getUser
@@ -13,7 +13,7 @@ interface IProfileService {
     suspend fun changeFollowStatus(toUsername: String, fromUserId: String, follow: Boolean): ProfileResponse
 }
 
-class ProfileService(private val databaseFactory: IDatabaseFactory) : IProfileService {
+class ProfileService(private val databaseFactory: IDatabaseProvider) : IProfileService {
     override suspend fun getProfile(username: String, currentUserId: String?): ProfileResponse {
         return databaseFactory.dbQuery {
             val toUser = getUserByUsername(username) ?: return@dbQuery getProfileByUser(null, false)

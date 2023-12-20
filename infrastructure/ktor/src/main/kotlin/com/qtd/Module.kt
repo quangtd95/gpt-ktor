@@ -7,7 +7,7 @@ import com.qtd.config.api
 import com.qtd.config.cors
 import com.qtd.config.statusPages
 import com.qtd.modules.auth.config.jwtConfig
-import com.qtd.modules.database.IDatabaseFactory
+import com.qtd.modules.database.IDatabaseProvider
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -24,7 +24,8 @@ import org.slf4j.event.Level
 fun Application.module() {
     val config: ApplicationConfig by inject()
     val tokenJWTVerifier: JWTVerifier by inject()
-    val factory: IDatabaseFactory by inject()
+    val databaseProvider: IDatabaseProvider by inject()
+    databaseProvider.init()
 
     install(DefaultHeaders)
     install(CORS) {
@@ -43,8 +44,6 @@ fun Application.module() {
             enable(SerializationFeature.INDENT_OUTPUT)
         }
     }
-
-    factory.init()
 
     install(StatusPages) {
         statusPages()
