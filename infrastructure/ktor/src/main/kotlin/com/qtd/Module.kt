@@ -3,7 +3,7 @@ package com.qtd
 import com.auth0.jwt.interfaces.JWTVerifier
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.qtd.config.ApplicationConfig
-import com.qtd.config.api
+import com.qtd.modules.api
 import com.qtd.config.cors
 import com.qtd.config.statusPages
 import com.qtd.modules.auth.config.jwtConfig

@@ -1,4 +1,4 @@
-package com.qtd.config
+package com.qtd.modules
 
 import com.qtd.modules.auth.api.auth
 import com.qtd.modules.profile.api.profile
