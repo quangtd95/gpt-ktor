@@ -1,9 +1,11 @@
 package com.qtd.modules.conversation.api
 
+import com.qtd.modules.conversation.dto.PostChat
 import com.qtd.modules.conversation.service.ConversationService
 import com.qtd.utils.userId
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
@@ -21,13 +23,8 @@ fun Route.conversation() {
             }
 
             get {
-                val conversationList = conversationService.getConversationList(call.userId())
+                val conversationList = conversationService.getConversations(call.userId())
                 call.respond(conversationList)
-            }
-
-            get("/{conversationId}/messages") {
-                val messages = conversationService.getMessages(call.userId(), call.parameters["conversationId"]!!)
-                call.respond(messages)
             }
 
             delete {
@@ -35,10 +32,35 @@ fun Route.conversation() {
                 call.respond("ok")
             }
 
-            delete("/{conversationId}") {
-                conversationService.deleteConversation(call.userId(), call.parameters["conversationId"]!!)
-                call.respond("ok")
+            route("/{conversationId}") {
+
+                delete {
+                    conversationService.deleteConversation(call.userId(), call.parameters["conversationId"]!!)
+                    call.respond("ok")
+                }
+
+                route("/messages") {
+                    get {
+                        val messages =
+                            conversationService.getMessages(call.userId(), call.parameters["conversationId"]!!)
+                        call.respond(messages)
+                    }
+
+                    post {
+                        val message = call.receive<PostChat>()
+                        val response = conversationService.postMessage(
+                            call.userId(),
+                            call.parameters["conversationId"]!!,
+                            message.content
+                        )
+                        call.respond(response)
+                    }
+                }
+
+
             }
+
+
         }
 
     }

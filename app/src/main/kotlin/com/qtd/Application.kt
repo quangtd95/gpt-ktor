@@ -4,6 +4,7 @@ import com.qtd.config.*
 import com.qtd.modules.auth.config.authKoinModule
 import com.qtd.modules.conversation.config.conversationKoinModule
 import com.qtd.modules.database.config.databaseKoinModule
+import com.qtd.modules.openai.config.openaiKoinModule
 import com.qtd.modules.profile.config.profileKoinModule
 import com.typesafe.config.ConfigFactory
 import io.ktor.server.application.*
@@ -27,6 +28,7 @@ fun main(args: Array<String>) {
                     authKoinModule,
                     profileKoinModule,
                     conversationKoinModule,
+                    openaiKoinModule
                 )
             }
         }

@@ -23,6 +23,12 @@ fun extractConfig(hoconConfig: HoconApplicationConfig) = config {
             isAutoCommit = property("isAutoCommit").getString().toBoolean()
             transactionIsolation = property("transactionIsolation").getString()
         }
+    }
 
+    openai {
+        with(hoconConfig.config("openai")) {
+            token = property("token").getString()
+            model = property("model").getString()
+        }
     }
 }
