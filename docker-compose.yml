@@ -1,0 +1,15 @@
+version: "3"
+
+volumes:
+  db:
+
+services:
+  db:
+    env_file:
+      - .env
+    image: postgres:14-alpine
+    volumes:
+      - db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
