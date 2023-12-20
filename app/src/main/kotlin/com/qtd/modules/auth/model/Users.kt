@@ -1,6 +1,5 @@
-package com.qtd.modules.auth.models
+package com.qtd.modules.auth.model
 
-import com.qtd.utils.UserExists
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

@@ -32,22 +32,4 @@ fun Route.auth() {
             call.respond(userCredentials)
         }
     }
-
-    authenticate("jwt") {
-        get("/users") {
-            val users = authService.getAllUsers()
-            call.respond(users.map { UserResponse.fromUser(it) })
-        }
-
-        get("/users/me") {
-            val user = authService.getUserById(call.userId())
-            call.respond(UserResponse.fromUser(user))
-        }
-
-        put("/user/me") {
-            val updateUser = call.receive<UpdateUserRequest>()
-            val user = authService.updateUser(call.userId(), updateUser)
-            call.respond(UserResponse.fromUser(user))
-        }
-    }
 }

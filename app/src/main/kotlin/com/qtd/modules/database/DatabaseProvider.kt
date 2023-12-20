@@ -1,9 +1,9 @@
 package com.qtd.modules.database
 
 import com.qtd.config.ApplicationConfig
-import com.qtd.modules.auth.models.Followings
-import com.qtd.modules.auth.models.RefreshTokens
-import com.qtd.modules.auth.models.Users
+import com.qtd.modules.auth.model.Followings
+import com.qtd.modules.auth.model.RefreshTokens
+import com.qtd.modules.auth.model.Users
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.*

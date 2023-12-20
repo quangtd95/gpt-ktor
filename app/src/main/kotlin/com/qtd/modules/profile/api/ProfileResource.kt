@@ -1,6 +1,6 @@
 package com.qtd.modules.profile.api
 
-import com.qtd.modules.profile.services.IProfileService
+import com.qtd.modules.profile.service.IProfileService
 import com.qtd.utils.param
 import com.qtd.utils.userId
 import io.ktor.server.application.*

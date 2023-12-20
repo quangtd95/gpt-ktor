@@ -1,4 +1,4 @@
-package com.qtd.modules.auth.models
+package com.qtd.modules.auth.model
 
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass

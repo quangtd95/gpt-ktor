@@ -1,4 +1,4 @@
-package com.qtd.modules.auth.dto
+package com.qtd.modules.auth.model
 
 import java.time.LocalDateTime
 

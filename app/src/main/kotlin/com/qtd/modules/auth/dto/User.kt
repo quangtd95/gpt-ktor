@@ -1,5 +1,7 @@
 package com.qtd.modules.auth.dto
 
+import com.qtd.modules.auth.model.Credentials
+
 data class RegisterUserRequest(val user: UserDto) {
     data class UserDto(val email: String, val username: String, val password: String)
 }
@@ -30,7 +32,7 @@ data class UserResponse(val user: UserDto) {
 
     companion object {
         fun fromUser(
-            user: com.qtd.modules.auth.models.User,
+            user: com.qtd.modules.auth.model.User,
         ): UserResponse = UserResponse(
             UserDto(
                 email = user.email, username = user.username, bio = user.bio, image = user.image
@@ -55,7 +57,7 @@ data class UserCredentialsResponse(val user: UserDto, val credentials: Credentia
     )
 
     companion object {
-        fun fromUser(user: com.qtd.modules.auth.models.User, credentials: Credentials) =
+        fun fromUser(user: com.qtd.modules.auth.model.User, credentials: Credentials) =
             UserCredentialsResponse(
                 UserDto(
                     email = user.email, username = user.username, bio = user.bio, image = user.image

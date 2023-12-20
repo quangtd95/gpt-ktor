@@ -4,7 +4,7 @@ import com.qtd.modules.BaseService
 import com.qtd.modules.auth.dto.RegisterUserRequest
 import com.qtd.modules.auth.dto.UpdateUserRequest
 import com.qtd.modules.auth.dto.UserCredentialsResponse
-import com.qtd.modules.auth.models.*
+import com.qtd.modules.auth.model.*
 import com.qtd.utils.AuthenticationException
 import com.qtd.utils.UserDoesNotExists
 import com.qtd.utils.UserExists
@@ -114,5 +114,3 @@ class AuthService : BaseService(), IAuthService {
 }
 
 fun getUser(id: String) = User.findById(UUID.fromString(id)) ?: throw UserDoesNotExists()
-
-fun getUserByUsername(username: String) = User.find { Users.username eq username }.firstOrNull()

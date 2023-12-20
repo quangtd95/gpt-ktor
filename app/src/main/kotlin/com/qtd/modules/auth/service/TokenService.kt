@@ -4,8 +4,8 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.JWTVerifier
 import com.qtd.modules.auth.config.JwtConfig
-import com.qtd.modules.auth.dto.Credentials
-import com.qtd.modules.auth.models.User
+import com.qtd.modules.auth.model.Credentials
+import com.qtd.modules.auth.model.User
 import java.time.LocalDateTime
 import java.time.ZoneId
 
