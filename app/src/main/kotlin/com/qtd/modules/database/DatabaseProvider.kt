@@ -38,6 +38,8 @@ class DatabaseProvider : IDatabaseProvider, KoinComponent {
         HikariConfig().run {
             driverClassName = dbConfig.driverClassName
             jdbcUrl = dbConfig.jdbcUrl
+            username = dbConfig.username
+            password = dbConfig.password
             maximumPoolSize = dbConfig.maximumPoolSize
             isAutoCommit = dbConfig.isAutoCommit
             transactionIsolation = dbConfig.transactionIsolation
