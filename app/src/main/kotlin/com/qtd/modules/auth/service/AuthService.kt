@@ -11,16 +11,17 @@ import com.qtd.utils.UserExists
 import org.koin.core.component.inject
 import java.util.*
 
-interface AuthUseCase {
+interface IAuthService {
     suspend fun register(registerUser: RegisterUserRequest): UserCredentialsResponse
     suspend fun login(email: String, password: String): UserCredentialsResponse
+    suspend fun refresh(refreshToken: String): UserCredentialsResponse
 
     suspend fun getUserById(id: String): User
     suspend fun updateUser(id: String, updateUser: UpdateUserRequest): User
     suspend fun getAllUsers(): List<User>
 }
 
-class AuthService : BaseService(), AuthUseCase {
+class AuthService : BaseService(), IAuthService {
     private val passwordEncryption by inject<IPasswordService>()
     private val tokenProvider by inject<ITokenService>()
     private val refreshTokenDao by inject<IRefreshTokenDao>()
@@ -56,6 +57,43 @@ class AuthService : BaseService(), AuthUseCase {
         } else {
             throw AuthenticationException()
         }
+    }
+
+    override suspend fun refresh(refreshToken: String): UserCredentialsResponse {
+        /**
+         * validate refresh token by verifier whether it is expired or not
+         * if it is expired, throw AuthenticationException
+         * if it is not expired, get the refresh token from the database
+         * if it is not found, throw AuthenticationException
+         * if it is found, check if the refresh token is revoked or not
+         * if it is revoked, throw AuthenticationException
+         * if it is not revoked, get the user from the database
+         * generate new refreshToken and accessToken
+         * revoke all old refreshTokens from the database
+         * save the refreshToken to the database
+         * return the new refreshToken and accessToken
+         */
+        tokenProvider.verifyRefreshToken(refreshToken)?.let { userId ->
+            dbQuery {
+                if (!refreshTokenDao.verifyToken(refreshToken)) {
+                    throw AuthenticationException()
+                }
+            }
+            val user = getUserById(userId)
+            val tokens = tokenProvider.createTokens(user)
+            dbQuery {
+                refreshTokenDao.deleteToken(refreshToken)
+                refreshTokenDao.newRefreshToken(
+                    user.id.value,
+                    tokens.refreshToken,
+                    tokens.refreshTokenExpiredTime,
+                )
+            }
+            return UserCredentialsResponse.fromUser(user, tokens)
+        }
+
+        throw AuthenticationException()
+
     }
 
 

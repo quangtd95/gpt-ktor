@@ -13,6 +13,7 @@ import java.time.ZoneId
 interface ITokenService {
     fun createTokens(user: User): Credentials
     fun verifyToken(token: String): String?
+    fun verifyRefreshToken(token: String): String?
     fun getTokenVerifier(): JWTVerifier
 }
 
@@ -27,6 +28,12 @@ class TokenService(private val jwtConfig: JwtConfig) : ITokenService {
 
     private val accessTokenVerifier = JWT
         .require(accessTokenAlgorithm)
+        .withAudience(jwtConfig.audience)
+        .withIssuer(jwtConfig.issuer)
+        .build()!!
+
+    private val refreshTokenVerifier = JWT
+        .require(refreshTokenAlgorithm)
         .withAudience(jwtConfig.audience)
         .withIssuer(jwtConfig.issuer)
         .build()!!
@@ -65,6 +72,10 @@ class TokenService(private val jwtConfig: JwtConfig) : ITokenService {
 
     override fun verifyToken(token: String): String? {
         return accessTokenVerifier.verify(token).claims["id"]?.asString()
+    }
+
+    override fun verifyRefreshToken(token: String): String? {
+        return refreshTokenVerifier.verify(token).claims["id"]?.asString()
     }
 
     override fun getTokenVerifier(): JWTVerifier = accessTokenVerifier

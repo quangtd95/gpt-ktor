@@ -1,10 +1,7 @@
 package com.qtd.modules.auth.api
 
-import com.qtd.modules.auth.service.AuthUseCase
-import com.qtd.modules.auth.dto.LoginUserRequest
-import com.qtd.modules.auth.dto.RegisterUserRequest
-import com.qtd.modules.auth.dto.UpdateUserRequest
-import com.qtd.modules.auth.dto.UserResponse
+import com.qtd.modules.auth.dto.*
+import com.qtd.modules.auth.service.IAuthService
 import com.qtd.utils.userId
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -14,7 +11,7 @@ import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
 fun Route.auth() {
-    val authService: AuthUseCase by inject()
+    val authService: IAuthService by inject()
 
     post("/users") {
         val registerUser = call.receive<RegisterUserRequest>()
@@ -26,6 +23,12 @@ fun Route.auth() {
         val loginUser = call.receive<LoginUserRequest>()
         val user = authService.login(loginUser.user.email, loginUser.user.password)
         call.respond(user)
+    }
+
+    post("/users/refresh") {
+        val refreshTokenRequest = call.receive<RefreshTokenRequest>()
+        val userCredentials = authService.refresh(refreshTokenRequest.refreshToken)
+        call.respond(userCredentials)
     }
 
     get("/users") {

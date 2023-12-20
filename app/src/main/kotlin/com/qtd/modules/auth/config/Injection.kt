@@ -20,6 +20,6 @@ val authKoinModule = module {
 }
 
 val serviceKoinModule = module {
-    single<AuthUseCase> { AuthService() }
+    single<IAuthService> { AuthService() }
     single<IProfileService> { ProfileService(get()) }
 }

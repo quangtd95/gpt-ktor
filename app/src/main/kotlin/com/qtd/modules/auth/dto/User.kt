@@ -18,6 +18,8 @@ data class UpdateUserRequest(val user: UserDto) {
     )
 }
 
+data class RefreshTokenRequest(val refreshToken: String)
+
 data class UserResponse(val user: UserDto) {
     data class UserDto(
         val email: String,
