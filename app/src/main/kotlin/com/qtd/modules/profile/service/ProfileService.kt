@@ -1,9 +1,9 @@
 package com.qtd.modules.profile.service
 
-import com.qtd.modules.database.IDatabaseProvider
-import com.qtd.modules.profile.model.ProfileResponse
+import com.qtd.modules.BaseService
 import com.qtd.modules.auth.model.User
 import com.qtd.modules.auth.service.getUser
+import com.qtd.modules.profile.model.ProfileResponse
 import com.qtd.utils.UserDoesNotExists
 import org.jetbrains.exposed.sql.SizedCollection
 
@@ -12,19 +12,17 @@ interface IProfileService {
     suspend fun changeFollowStatus(toUsername: String, fromUserId: String, follow: Boolean): ProfileResponse
 }
 
-class ProfileService(private val databaseFactory: IDatabaseProvider) : IProfileService {
-    override suspend fun getProfile(username: String, currentUserId: String?): ProfileResponse {
-        return databaseFactory.dbQuery {
-            val toUser = getUserByUsername(username) ?: return@dbQuery getProfileByUser(null, false)
-            currentUserId ?: return@dbQuery getProfileByUser(toUser)
-            val fromUser = getUser(currentUserId)
-            val follows = isFollower(toUser, fromUser)
-            getProfileByUser(toUser, follows)
-        }
+class ProfileService : BaseService(), IProfileService {
+    override suspend fun getProfile(username: String, currentUserId: String?) = dbQuery {
+        val toUser = getUserByUsername(username) ?: return@dbQuery getProfileByUser(null, false)
+        currentUserId ?: return@dbQuery getProfileByUser(toUser)
+        val fromUser = getUser(currentUserId)
+        val follows = isFollower(toUser, fromUser)
+        getProfileByUser(toUser, follows)
     }
 
     override suspend fun changeFollowStatus(toUsername: String, fromUserId: String, follow: Boolean): ProfileResponse {
-        databaseFactory.dbQuery {
+        dbQuery {
             val toUser = getUserByUsername(toUsername) ?: throw UserDoesNotExists()
             val fromUser = getUser(fromUserId)
             if (follow) {
