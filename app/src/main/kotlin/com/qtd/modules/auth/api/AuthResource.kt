@@ -31,5 +31,13 @@ fun Route.auth() {
             val userCredentials = authService.refresh(refreshTokenRequest.refreshToken)
             call.respond(userCredentials)
         }
+
+        authenticate("jwt") {
+            delete("/logout") {
+                authService.logout(call.userId())
+                call.respond("ok")
+            }
+        }
+
     }
 }
