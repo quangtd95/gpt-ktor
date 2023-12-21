@@ -66,23 +66,27 @@ object ConversationService : BaseService(), IConversationService {
         content: String
     ): ConversationMessageResponse {
         val uuidUserId = UUID.fromString(userId)
-        var conversation: Conversation? = null
-        var messages: List<ConversationMessage>? = listOf()
-        dbQuery {
-            conversation = Conversation.find {
+        val conversation: Conversation = dbQuery {
+            //get conversation
+            //if conversation not found, throw exception
+            Conversation.find {
                 Conversations.userId eq uuidUserId and (Conversations.id eq UUID.fromString(conversationId))
-            }.firstOrNull()
-            conversation?.let { conv ->
+            }.firstOrNull()?.also {
+                //save message to database
                 ConversationMessage.new {
                     this.content = content
                     this.role = "user"
-                    this.conversation = conv
+                    this.conversation = it
                     this.userId = uuidUserId
                 }
-                messages = conv.messages.toList()
-            }
+            } ?: throw Exception("Conversation not found")
         }
-        val response = chatService.chat(messages?.toList() ?: listOf())
+
+        //get all old messages from database
+        val messages: List<ConversationMessage> = dbQuery {
+            conversation.messages.toList()
+        }
+        val response = chatService.chat(messages.toList())
 
         val responseConversationMessage = dbQuery {
             ConversationMessage.new {

@@ -8,15 +8,18 @@ services:
     build: .
     image: quangtd95/ktor-gpt:1.0.0
     environment:
-      - DATABASE_URL=jdbc:postgresql://db:5432/gpt?user=gpt&password=gpt
+      - OPENAI_TOKEN=${OPENAI_TOKEN}
+      - DATABASE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}?user=${POSTGRES_PASSWORD}&password=${POSTGRES_USER}
     ports:
       - "8989:8989"
     depends_on:
       db:
         condition: service_healthy
   db:
-    env_file:
-      - .env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
     image: postgres:14-alpine
     volumes:
       - db:/var/lib/postgresql/data

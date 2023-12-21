@@ -39,12 +39,19 @@ object ChatService : KoinComponent, IChatService {
         val result = openAI.chatCompletion(
             ChatCompletionRequest(
                 model = ModelId(config.openAiConfig.model),
-                messages = message.map {
+                messages = message.takeLast(10).map {
                     ChatMessage(
                         role = fromString(it.role),
                         content = it.content
                     )
-                }),
+                } + ChatMessage(
+                    role = ChatRole.System,
+                    content = """
+                    You are a fun assistant, your name is Fun-GPT, you can answer everything concisely. 
+                    At the end of each answer, add a fun fact or a short joke. 
+                    Use many icons with a humorous style.
+                    """.trimIndent()
+                ))
         )
         return if (result.choices.isNotEmpty()) {
             result.choices[0].message.content ?: "Sorry I don't understand"
