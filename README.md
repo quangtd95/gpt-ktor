@@ -1,11 +1,11 @@
 # Web Backend Application with KTor
 
 ## Overview
-This project is a web backend application that demonstrates the use of the KTor framework. It features user authentication and an AI chatbot named Kill-GPT.
+This project is a web backend application that demonstrates the use of the KTor framework. It features user authentication and an AI chatbot named Fun-GPT.
 
 ## Features
 - **User Authentication**: Users can register, login, and logout.
-- **AI Chat**: After authentication, users can create conversations and chat with an AI called Kill-GPT.
+- **AI Chat**: After authentication, users can create conversations and chat with an AI called Fun-GPT.
 
 ## Getting Started
 1. **Clone the repository**: Use your preferred method to clone the repository to your local machine.
@@ -19,7 +19,7 @@ Please refer to the official IntelliJ IDEA and Gradle documentation for more det
 ## Usage
 After running the application:
 1. Register a new user or login with an existing account.
-2. Start a new conversation with Kill-GPT.
+2. Start a new conversation with Fun-GPT.
 
 ## Built With
 - KTOR: A framework for building asynchronous servers and clients.
