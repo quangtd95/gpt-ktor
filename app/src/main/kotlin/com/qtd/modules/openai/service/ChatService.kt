@@ -12,6 +12,7 @@ import com.aallam.openai.client.OpenAIConfig
 import com.qtd.config.ApplicationConfig
 import com.qtd.modules.conversation.model.ConversationMessage
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.time.Duration.Companion.seconds
@@ -46,11 +47,7 @@ object ChatService : KoinComponent, IChatService {
                     )
                 } + ChatMessage(
                     role = ChatRole.System,
-                    content = """
-                    You are a fun assistant, your name is Fun-GPT, you can answer everything concisely. 
-                    At the end of each answer, add a fun fact or a short joke. 
-                    Use many icons with a humorous style.
-                    """.trimIndent()
+                    content = system_instructions
                 ))
         )
         return if (result.choices.isNotEmpty()) {
@@ -61,9 +58,30 @@ object ChatService : KoinComponent, IChatService {
     }
 
     override suspend fun chatStream(message: List<ConversationMessage>): Flow<String> {
-        TODO("Not yet implemented")
+        val result = openAI.chatCompletions(
+            ChatCompletionRequest(
+                model = ModelId(config.openAiConfig.model),
+                messages = message.takeLast(10).map {
+                    ChatMessage(
+                        role = fromString(it.role),
+                        content = it.content
+                    )
+                } + ChatMessage(
+                    role = ChatRole.System,
+                    content = system_instructions
+                ))
+        )
+        return result.map {
+            it.choices[0].delta.content ?: ""
+        }
     }
 }
+
+val system_instructions = """
+    You are a fun assistant, your name is Fun-GPT, you can answer everything concisely. 
+    At the end of each answer, add a fun fact or a short joke. 
+    Use many icons with a humorous style.
+""".trimIndent()
 
 fun fromString(role: String): ChatRole = when (role) {
     "system" -> ChatRole.System

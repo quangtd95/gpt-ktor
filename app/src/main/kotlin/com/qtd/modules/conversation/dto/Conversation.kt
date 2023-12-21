@@ -22,6 +22,10 @@ data class ConversationResponse(val conversation: ConversationDto) {
 
 }
 
+data class ConversationMessageStreamResponse(val message: ConversationMessageStreamDto) {
+    data class ConversationMessageStreamDto(val id: String, val chunk: String, val end: Boolean)
+}
+
 data class ConversationMessageResponse(val message: ConversationMessageDto) {
     data class ConversationMessageDto(
         val id: String, val role: String, val content: String, val createdAt: String
