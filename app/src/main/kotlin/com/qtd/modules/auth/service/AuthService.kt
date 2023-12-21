@@ -19,6 +19,7 @@ interface IAuthService {
     suspend fun getUserById(id: String): User
     suspend fun updateUser(id: String, updateUser: UpdateUserRequest): User
     suspend fun getAllUsers(): List<User>
+    suspend fun logout(userId: String)
 }
 
 class AuthService : BaseService(), IAuthService {
@@ -110,6 +111,12 @@ class AuthService : BaseService(), IAuthService {
     }
 
     override suspend fun getAllUsers() = dbQuery { User.all().toList() }
+
+    override suspend fun logout(userId: String) {
+        dbQuery {
+            refreshTokenDao.revokeAllTokens(UUID.fromString(userId))
+        }
+    }
 
 }
 
