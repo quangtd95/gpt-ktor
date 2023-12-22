@@ -1,11 +1,13 @@
 package com.qtd.modules.conversation.service
 
+import com.qtd.config.ApplicationConfig
 import com.qtd.modules.BaseService
 import com.qtd.modules.conversation.dto.ConversationMessageResponse
 import com.qtd.modules.conversation.dto.ConversationResponse
 import com.qtd.modules.conversation.model.Conversation
 import com.qtd.modules.conversation.model.ConversationMessage
 import com.qtd.modules.conversation.model.Conversations
+import com.qtd.modules.openai.dto.Message
 import com.qtd.modules.openai.service.IChatService
 import kotlinx.coroutines.flow.*
 import org.jetbrains.exposed.sql.and
@@ -14,11 +16,12 @@ import java.util.*
 
 object ConversationService : BaseService(), IConversationService {
     private val chatService by inject<IChatService>()
+    private val config by inject<ApplicationConfig>()
 
     override suspend fun createConversation(userId: String): ConversationResponse {
         val newConversation = dbQuery {
             Conversation.new {
-                model = "gpt-3.5-turbo"
+                model = config.openAiConfig.model
                 title = UUID.randomUUID().toString()
                 this.userId = UUID.fromString(userId)
             }
@@ -63,88 +66,69 @@ object ConversationService : BaseService(), IConversationService {
     override suspend fun postMessage(
         userId: String, conversationId: String, content: String
     ): ConversationMessageResponse {
-        val uuidUserId = UUID.fromString(userId)
-        val conversation: Conversation = dbQuery {
-            //get conversation
-            //if conversation not found, throw exception
-            Conversation.find {
-                Conversations.userId eq uuidUserId and (Conversations.id eq UUID.fromString(conversationId))
-            }.firstOrNull()?.also {
-                //save message to database
-                ConversationMessage.new {
-                    this.content = content
-                    this.role = "user"
-                    this.conversation = it
-                    this.userId = uuidUserId
-                }
-            } ?: throw Exception("Conversation not found")
-        }
 
-        //get all old messages from database
-        val messages: List<ConversationMessage> = dbQuery {
-            conversation.messages.toList()
-        }
-        val response = chatService.chat(messages.toList())
+        val conversation = getConversation(userId, conversationId)
 
-        val responseConversationMessage = dbQuery {
-            ConversationMessage.new {
-                this.content = response
-                this.role = "assistant"
-                this.conversation = conversation
-                this.userId = uuidUserId
-            }
-        }
-        return ConversationMessageResponse.fromConversationMessage(responseConversationMessage)
+        conversation.addNewUserMessage(content)
+
+        val response = chatService.chat(conversation.getLastMessages().map { Message(it.role, it.content) })
+
+        val assistantMessage = conversation.addNewAssistantMessage(response)
+
+        return ConversationMessageResponse.fromConversationMessage(assistantMessage)
     }
 
     override suspend fun postMessageStream(
         userId: String, conversationId: String, content: String
     ): Flow<String> {
-        //TODO: get userId from request scope instead of parameter
-        val uuidUserId = UUID.fromString(userId)
-        val conversation: Conversation = dbQuery {
-            //get conversation
-            //if conversation not found, throw exception
-            Conversation.find {
-                Conversations.userId eq uuidUserId and (Conversations.id eq UUID.fromString(conversationId))
-            }.firstOrNull()?.also {
-                //save message to database
-                ConversationMessage.new {
-                    this.content = content
-                    this.role = "user"
-                    this.conversation = it
-                    this.userId = uuidUserId
-                }
-            } ?: throw Exception("Conversation not found")
-        }
+        val conversation = getConversation(userId, conversationId)
 
-        //get all old messages from database
-        val messages: List<ConversationMessage> = dbQuery {
-            conversation.messages.toList()
-        }
-        val response = chatService.chatStream(messages.toList())
+        conversation.addNewUserMessage(content)
+
+        val responseStream = chatService.chatStream(conversation.getLastMessages().map { Message(it.role, it.content) })
 
         return flow {
-            val wholeContent = StringBuilder()
-            response
-                .onEach {
-                    wholeContent.append(it)
-                }
-                .onCompletion {
-                    dbQuery {
-                        ConversationMessage.new {
-                            this.content = wholeContent.toString()
-                            this.role = "assistant"
-                            this.conversation = conversation
-                            this.userId = uuidUserId
-                        }
-                    }
-                }
-                .collect {
+            val assistantMessage = StringBuilder()
+            responseStream.onEach {
+                    assistantMessage.append(it)
+                }.onCompletion {
+                    conversation.addNewAssistantMessage(assistantMessage.toString())
+                }.collect {
                     emit(it)
                 }
         }
 
+    }
+
+    private suspend fun getConversation(userId: String, conversationId: String) = dbQuery {
+        Conversation.find {
+            Conversations.userId eq UUID.fromString(userId) and (Conversations.id eq UUID.fromString(conversationId))
+        }.firstOrNull() ?: throw Exception("Conversation not found")
+    }
+
+    private suspend fun Conversation.addNewUserMessage(content: String) = dbQuery {
+        val conv = this
+        ConversationMessage.new {
+            this.content = content
+            this.role = "user"
+            this.conversation = conv
+            this.userId = conv.userId
+        }
+
+    }
+
+    private suspend fun Conversation.addNewAssistantMessage(content: String) = dbQuery {
+        val conv = this
+        ConversationMessage.new {
+            this.content = content
+            this.role = "assistant"
+            this.conversation = conv
+            this.userId = conv.userId
+        }
+    }
+
+    private suspend fun Conversation.getLastMessages(): List<ConversationMessage> = dbQuery {
+        messages.toList().takeLast(2)
     }
 }
 
