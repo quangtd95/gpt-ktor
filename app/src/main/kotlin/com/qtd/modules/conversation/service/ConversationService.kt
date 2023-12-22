@@ -7,6 +7,7 @@ import com.qtd.modules.conversation.dto.ConversationMessageResponse
 import com.qtd.modules.conversation.dto.ConversationResponse
 import com.qtd.modules.conversation.model.Conversation
 import com.qtd.modules.conversation.model.ConversationMessage
+import com.qtd.modules.conversation.model.ConversationMessages
 import com.qtd.modules.conversation.model.Conversations
 import com.qtd.modules.openai.dto.Message
 import com.qtd.modules.openai.service.IChatService
@@ -42,6 +43,17 @@ object ConversationService : BaseService(), IConversationService {
             }.firstOrNull()?.messages?.toList()
         }
         return messages?.map { ConversationMessageResponse.fromConversationMessage(it) } ?: listOf()
+    }
+
+    override suspend fun deleteMessage(userId: String, conversationId: String, messageId: String): Boolean {
+        dbQuery {
+            ConversationMessage.find {
+                (ConversationMessages.id eq UUID.fromString(messageId)) and
+                        (ConversationMessages.userId eq UUID.fromString(userId)) and
+                        (ConversationMessages.conversationId eq UUID.fromString(conversationId))
+            }.firstOrNull()?.delete()
+        }
+        return true
     }
 
     override suspend fun deleteConversations(userId: String): Boolean {
@@ -144,6 +156,7 @@ interface IConversationService {
     suspend fun deleteConversation(userId: String, conversationId: String): Boolean
 
     suspend fun getMessages(userId: String, conversationId: String): List<ConversationMessageResponse>
+    suspend fun deleteMessage(userId: String, conversationId: String, messageId: String): Boolean
     suspend fun postMessage(userId: String, conversationId: String, content: String): ConversationMessageResponse
     suspend fun postMessageStream(userId: String, conversationId: String, content: String): Flow<String>
 }

@@ -69,6 +69,13 @@ fun Route.conversation() {
                         )
                         call.respondSse(response)
                     }
+
+                    delete("/{messageId}") {
+                        conversationService.deleteMessage(
+                            call.userId(), call.parameters["conversationId"]!!, call.parameters["messageId"]!!
+                        )
+                        call.baseRespond(success())
+                    }
                 }
             }
         }
