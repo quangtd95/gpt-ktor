@@ -1,5 +1,8 @@
 package com.qtd.modules.conversation.api
 
+import com.qtd.modules.BaseResponse.Companion.created
+import com.qtd.modules.BaseResponse.Companion.success
+import com.qtd.modules.baseRespond
 import com.qtd.modules.conversation.dto.PostChat
 import com.qtd.modules.conversation.service.ConversationService
 import com.qtd.utils.userId
@@ -24,31 +27,31 @@ fun Route.conversation() {
 
             post {
                 val conversation = conversationService.createConversation(call.userId())
-                call.respond(conversation)
+                call.baseRespond(created(conversation))
             }
 
             get {
                 val conversationList = conversationService.getConversations(call.userId())
-                call.respond(conversationList)
+                call.baseRespond(success(conversationList))
             }
 
             delete {
                 conversationService.deleteConversations(call.userId())
-                call.respond("ok")
+                call.baseRespond(success())
             }
 
             route("/{conversationId}") {
 
                 delete {
                     conversationService.deleteConversation(call.userId(), call.parameters["conversationId"]!!)
-                    call.respond("ok")
+                    call.baseRespond(success())
                 }
 
                 route("/messages") {
                     get {
                         val messages =
                             conversationService.getMessages(call.userId(), call.parameters["conversationId"]!!)
-                        call.respond(messages)
+                        call.baseRespond(success(messages))
                     }
 
                     post {
@@ -56,7 +59,7 @@ fun Route.conversation() {
                         val response = conversationService.postMessage(
                             call.userId(), call.parameters["conversationId"]!!, message.content
                         )
-                        call.respond(response)
+                        call.respond(success(response))
                     }
 
                     post("/stream") {
@@ -81,17 +84,15 @@ fun Route.conversation() {
 suspend fun ApplicationCall.respondSse(eventFlow: Flow<String>) {
     response.cacheControl(CacheControl.NoCache(null))
     respondBytesWriter(contentType = ContentType.Text.EventStream) {
-        eventFlow
-            .onCompletion {
-                flush()
-                close()
+        eventFlow.onCompletion {
+            flush()
+            close()
+        }.collect { event ->
+            for (dataLine in event.lines()) {
+                writeStringUtf8("data: $dataLine\n")
             }
-            .collect { event ->
-                for (dataLine in event.lines()) {
-                    writeStringUtf8("data: $dataLine\n")
-                }
-                writeStringUtf8("\n")
-                flush()
-            }
+            writeStringUtf8("\n")
+            flush()
+        }
     }
 }

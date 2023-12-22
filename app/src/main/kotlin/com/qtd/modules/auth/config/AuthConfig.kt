@@ -1,14 +1,14 @@
 package com.qtd.modules.auth.config
 
 import com.auth0.jwt.interfaces.JWTVerifier
+import com.qtd.modules.BaseResponse
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 
 fun AuthenticationConfig.jwtConfig(
-    env: JwtConfig,
-    tokenVerifier: JWTVerifier
+    env: JwtConfig, tokenVerifier: JWTVerifier
 ) {
     jwt("jwt") {
         verifier(tokenVerifier)
@@ -19,10 +19,9 @@ fun AuthenticationConfig.jwtConfig(
         }
 
         challenge { defaultScheme, realm ->
-            call.respond(
-                HttpStatusCode.Unauthorized,
-                "Token with schema: $defaultScheme, realm= $realm is not valid or has expired"
-            )
+            val error = "Access token is invalid: realm=$realm, defaultScheme=$defaultScheme"
+            val r = BaseResponse.authorizationError(error)
+            call.respond(HttpStatusCode.fromValue(r.status), r)
         }
     }
 }
