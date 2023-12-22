@@ -6,7 +6,7 @@ volumes:
 services:
   web:
     build: .
-    image: quangtd95/ktor-gpt:1.1.1
+    image: quangtd95/ktor-gpt:1.2.0
     environment:
       - OPENAI_TOKEN=${OPENAI_TOKEN}
       - DATABASE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}?user=${POSTGRES_PASSWORD}&password=${POSTGRES_USER}
