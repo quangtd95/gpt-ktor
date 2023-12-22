@@ -1,11 +1,18 @@
 package com.qtd.modules.conversation.api
 
+import com.qtd.SWAGGER_SECURITY_SCHEMA
+import com.qtd.modules.BaseResponse
 import com.qtd.modules.BaseResponse.Companion.created
 import com.qtd.modules.BaseResponse.Companion.success
 import com.qtd.modules.baseRespond
+import com.qtd.modules.conversation.dto.ConversationResponse
 import com.qtd.modules.conversation.dto.PostChat
 import com.qtd.modules.conversation.service.ConversationService
 import com.qtd.utils.userId
+import io.github.smiley4.ktorswaggerui.dsl.delete
+import io.github.smiley4.ktorswaggerui.dsl.get
+import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.route
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -21,21 +28,48 @@ import org.koin.ktor.ext.inject
 fun Route.conversation() {
     val conversationService: ConversationService by inject()
 
-    route("/conversations") {
+    route("/conversations", {
+        tags = listOf("Conversation")
+        securitySchemeName = SWAGGER_SECURITY_SCHEMA
+    }) {
 
         authenticate("jwt") {
 
-            post {
+            post("", {
+                description = "Create conversation"
+                response {
+                    HttpStatusCode.Created to {
+                        class ConversationResponseType : BaseResponse<ConversationResponse>()
+                        body(ConversationResponseType::class)
+                    }
+                }
+            }) {
                 val conversation = conversationService.createConversation(call.userId())
                 call.baseRespond(created(conversation))
             }
 
-            get {
+            get("", {
+                description = "Get conversations"
+                response {
+                    HttpStatusCode.OK to {
+                        class ConversationResponseType : BaseResponse<ConversationResponse>()
+                        body(ConversationResponseType::class)
+                    }
+                }
+            }) {
                 val conversationList = conversationService.getConversations(call.userId())
                 call.baseRespond(success(conversationList))
             }
 
-            delete {
+            delete("", {
+                description = "Delete conversations"
+                response {
+                    HttpStatusCode.OK to {
+                        class SuccessType : BaseResponse<Any>()
+                        body(SuccessType::class)
+                    }
+                }
+            }) {
                 conversationService.deleteConversations(call.userId())
                 call.baseRespond(success())
             }

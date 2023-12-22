@@ -36,7 +36,7 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-status-pages-jvm:$ktor_version")
-    testImplementation("io.ktor:ktor-server-tests-jvm")
+    testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
     implementation("org.jetbrains.exposed:exposed-core:0.38.2")
@@ -50,6 +50,7 @@ dependencies {
 
     implementation("com.aallam.openai:openai-client:3.6.2")
     implementation("io.ktor:ktor-client-okhttp:$ktor_version")
-
     implementation("io.insert-koin", "koin-ktor", "3.4.0")
+
+    implementation("io.github.smiley4:ktor-swagger-ui:2.7.2")
 }
