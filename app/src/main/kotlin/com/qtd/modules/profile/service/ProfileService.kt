@@ -1,10 +1,10 @@
 package com.qtd.modules.profile.service
 
 import com.qtd.modules.BaseService
+import com.qtd.exception.UserDoesNotExistsException
 import com.qtd.modules.auth.model.User
 import com.qtd.modules.auth.service.getUser
 import com.qtd.modules.profile.model.ProfileResponse
-import com.qtd.utils.UserDoesNotExists
 import org.jetbrains.exposed.sql.SizedCollection
 
 interface IProfileService {
@@ -23,7 +23,7 @@ class ProfileService : BaseService(), IProfileService {
 
     override suspend fun changeFollowStatus(toUsername: String, fromUserId: String, follow: Boolean): ProfileResponse {
         dbQuery {
-            val toUser = getUserByUsername(toUsername) ?: throw UserDoesNotExists()
+            val toUser = getUserByUsername(toUsername) ?: throw UserDoesNotExistsException()
             val fromUser = getUser(fromUserId)
             if (follow) {
                 addFollower(toUser, fromUser)

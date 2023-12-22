@@ -1,6 +1,7 @@
 package com.qtd.modules.conversation.service
 
 import com.qtd.config.ApplicationConfig
+import com.qtd.exception.BadRequestException
 import com.qtd.modules.BaseService
 import com.qtd.modules.conversation.dto.ConversationMessageResponse
 import com.qtd.modules.conversation.dto.ConversationResponse
@@ -90,12 +91,12 @@ object ConversationService : BaseService(), IConversationService {
         return flow {
             val assistantMessage = StringBuilder()
             responseStream.onEach {
-                    assistantMessage.append(it)
-                }.onCompletion {
-                    conversation.addNewAssistantMessage(assistantMessage.toString())
-                }.collect {
-                    emit(it)
-                }
+                assistantMessage.append(it)
+            }.onCompletion {
+                conversation.addNewAssistantMessage(assistantMessage.toString())
+            }.collect {
+                emit(it)
+            }
         }
 
     }
@@ -103,7 +104,10 @@ object ConversationService : BaseService(), IConversationService {
     private suspend fun getConversation(userId: String, conversationId: String) = dbQuery {
         Conversation.find {
             Conversations.userId eq UUID.fromString(userId) and (Conversations.id eq UUID.fromString(conversationId))
-        }.firstOrNull() ?: throw Exception("Conversation not found")
+        }.firstOrNull() ?: throw BadRequestException(
+            "Conversation not found",
+            mapOf("conversationId" to conversationId)
+        )
     }
 
     private suspend fun Conversation.addNewUserMessage(content: String) = dbQuery {

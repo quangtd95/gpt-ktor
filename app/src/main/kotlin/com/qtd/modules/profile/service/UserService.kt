@@ -2,8 +2,8 @@ package com.qtd.modules.profile.service
 
 import com.qtd.modules.BaseService
 import com.qtd.modules.auth.dto.UpdateUserRequest
+import com.qtd.exception.UserDoesNotExistsException
 import com.qtd.modules.auth.model.*
-import com.qtd.utils.UserDoesNotExists
 import org.koin.core.component.inject
 import java.util.*
 
@@ -31,6 +31,6 @@ class UserService : BaseService(), IUserService {
     override suspend fun getAllUsers() = dbQuery { User.all().toList() }
 }
 
-fun getUser(id: String) = User.findById(UUID.fromString(id)) ?: throw UserDoesNotExists()
+fun getUser(id: String) = User.findById(UUID.fromString(id)) ?: throw UserDoesNotExistsException()
 
 fun getUserByUsername(username: String) = User.find { Users.username eq username }.firstOrNull()

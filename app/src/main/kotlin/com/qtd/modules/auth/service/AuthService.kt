@@ -4,10 +4,11 @@ import com.qtd.modules.BaseService
 import com.qtd.modules.auth.dto.RegisterUserRequest
 import com.qtd.modules.auth.dto.UpdateUserRequest
 import com.qtd.modules.auth.dto.UserCredentialsResponse
+import com.qtd.exception.LoginCredentialsInvalidException
+import com.qtd.exception.RefreshTokenInvalidException
+import com.qtd.exception.UserDoesNotExistsException
+import com.qtd.exception.UserExistsException
 import com.qtd.modules.auth.model.*
-import com.qtd.utils.AuthenticationException
-import com.qtd.utils.UserDoesNotExists
-import com.qtd.utils.UserExists
 import org.koin.core.component.inject
 import java.util.*
 
@@ -23,40 +24,47 @@ interface IAuthService {
 }
 
 class AuthService : BaseService(), IAuthService {
-    private val passwordEncryption by inject<IPasswordService>()
-    private val tokenProvider by inject<ITokenService>()
+    private val passwordService by inject<IPasswordService>()
+    private val tokenService by inject<ITokenService>()
     private val refreshTokenDao by inject<IRefreshTokenDao>()
     private val userDao by inject<IUserDao>()
 
     override suspend fun register(registerUser: RegisterUserRequest): UserCredentialsResponse = dbQuery {
         if (userDao.isExists(registerUser.user.email, registerUser.user.username)) {
-            throw UserExists()
+            throw UserExistsException(
+                mapOf(
+                    "email" to registerUser.user.email, "username" to registerUser.user.username
+                )
+            )
         }
+
+        passwordService.validateFeasiblePassword(registerUser.user.password)
 
         val newUser = userDao.createNewUser(
             email = registerUser.user.email,
             username = registerUser.user.username,
-            password = passwordEncryption.encryptPassword(registerUser.user.password)
+            password = passwordService.encryptPassword(registerUser.user.password)
         )
-
-        val tokens = tokenProvider.createTokens(newUser)
+        val tokens = tokenService.createTokens(newUser)
         refreshTokenDao.newRefreshToken(newUser.id.value, tokens.refreshToken, tokens.refreshTokenExpiredTime)
 
         UserCredentialsResponse.fromUser(newUser, tokens)
     }
 
     override suspend fun login(email: String, password: String): UserCredentialsResponse = dbQuery {
-        val user = User.find { (Users.email eq email) }.firstOrNull() ?: throw UserDoesNotExists()
-        if (passwordEncryption.validatePassword(password, user.password)) {
+        val user = User.find { (Users.email eq email) }.firstOrNull()
+            ?: throw UserDoesNotExistsException(mapOf("email" to email))
+
+        if (passwordService.validatePassword(password, user.password)) {
 
             refreshTokenDao.revokeAllTokens(user.id.value)
 
-            val tokens = tokenProvider.createTokens(user)
+            val tokens = tokenService.createTokens(user)
             refreshTokenDao.newRefreshToken(user.id.value, tokens.refreshToken, tokens.refreshTokenExpiredTime)
 
             UserCredentialsResponse.fromUser(user, tokens)
         } else {
-            throw AuthenticationException()
+            throw LoginCredentialsInvalidException()
         }
     }
 
@@ -74,14 +82,14 @@ class AuthService : BaseService(), IAuthService {
          * save the refreshToken to the database
          * return the new refreshToken and accessToken
          */
-        tokenProvider.verifyRefreshToken(refreshToken)?.let { userId ->
+        tokenService.verifyRefreshToken(refreshToken)?.let { userId ->
             dbQuery {
                 if (!refreshTokenDao.verifyToken(refreshToken)) {
-                    throw AuthenticationException()
+                    throw RefreshTokenInvalidException()
                 }
             }
             val user = getUserById(userId)
-            val tokens = tokenProvider.createTokens(user)
+            val tokens = tokenService.createTokens(user)
             dbQuery {
                 refreshTokenDao.deleteToken(refreshToken)
                 refreshTokenDao.newRefreshToken(
@@ -93,7 +101,7 @@ class AuthService : BaseService(), IAuthService {
             return UserCredentialsResponse.fromUser(user, tokens)
         }
 
-        throw AuthenticationException()
+        throw RefreshTokenInvalidException()
 
     }
 
@@ -120,4 +128,4 @@ class AuthService : BaseService(), IAuthService {
 
 }
 
-fun getUser(id: String) = User.findById(UUID.fromString(id)) ?: throw UserDoesNotExists()
+fun getUser(id: String) = User.findById(UUID.fromString(id)) ?: throw UserDoesNotExistsException()

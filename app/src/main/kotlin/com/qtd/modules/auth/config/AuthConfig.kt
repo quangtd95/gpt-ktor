@@ -20,7 +20,7 @@ fun AuthenticationConfig.jwtConfig(
 
         challenge { defaultScheme, realm ->
             val error = "Access token is invalid: realm=$realm, defaultScheme=$defaultScheme"
-            val r = BaseResponse.authorizationError(error)
+            val r = BaseResponse.authenticationError(error)
             call.respond(HttpStatusCode.fromValue(r.status), r)
         }
     }
