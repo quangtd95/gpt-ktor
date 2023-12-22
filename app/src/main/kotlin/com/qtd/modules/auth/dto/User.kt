@@ -2,16 +2,16 @@ package com.qtd.modules.auth.dto
 
 import com.qtd.modules.auth.model.Credentials
 
-data class RegisterUserRequest(val user: UserDto) {
-    data class UserDto(val email: String, val username: String, val password: String)
+data class RegisterUserRequest(val user: RegisterUserDto) {
+    data class RegisterUserDto(val email: String, val username: String, val password: String)
 }
 
-data class LoginUserRequest(val user: UserDto) {
-    data class UserDto(val email: String, val password: String)
+data class LoginUserRequest(val user: LoginUserDto) {
+    data class LoginUserDto(val email: String, val password: String)
 }
 
-data class UpdateUserRequest(val user: UserDto) {
-    data class UserDto(
+data class UpdateUserRequest(val user: UpdateUserDto) {
+    data class UpdateUserDto(
         val email: String? = null,
         val username: String? = null,
         val password: String? = null,

@@ -3,14 +3,13 @@ package com.qtd
 import com.auth0.jwt.interfaces.JWTVerifier
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.qtd.config.ApplicationConfig
+import com.qtd.config.configSwagger
 import com.qtd.config.cors
 import com.qtd.config.statusPages
 import com.qtd.modules.api
 import com.qtd.modules.auth.config.jwtConfig
 import com.qtd.modules.database.IDatabaseProvider
 import io.github.smiley4.ktorswaggerui.SwaggerUI
-import io.github.smiley4.ktorswaggerui.data.AuthScheme
-import io.github.smiley4.ktorswaggerui.data.AuthType
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -53,46 +52,7 @@ fun Application.module() {
     }
 
     install(SwaggerUI) {
-        info {
-            title = "Fun-GPT"
-            version = "latest"
-            description = "Fun-GPT API"
-            termsOfService = "http://www.example.com/terms"
-            contact {
-                name = "Fun-GPT Support"
-                url = "https://github.com/quangtd95"
-                email = "quang.td95@gmail.com"
-            }
-            license {
-                name = "MIT"
-                url = ""
-            }
-        }
-        server {
-            url = "http://localhost:8989"
-            description = "Development server"
-        }
-        server {
-            url = "https://fungpt.com/"
-            description = "Production server"
-        }
-        securityScheme(SWAGGER_SECURITY_SCHEMA) {
-            type = AuthType.HTTP
-            scheme = AuthScheme.BEARER
-            bearerFormat = "jwt"
-        }
-        tag("Auth") {
-            description = "Operations about authentication"
-        }
-        tag("User") {
-            description = "Operations about user"
-        }
-        tag("Conversation") {
-            description = "Operations about conversation"
-        }
-        tag("Profile") {
-            description = "Operations about profile"
-        }
+        configSwagger()
     }
 
     routing {
@@ -100,4 +60,4 @@ fun Application.module() {
     }
 }
 
-const val SWAGGER_SECURITY_SCHEMA = "BearerJWTAuth"
+

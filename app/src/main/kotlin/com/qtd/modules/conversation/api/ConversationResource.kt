@@ -1,6 +1,6 @@
 package com.qtd.modules.conversation.api
 
-import com.qtd.SWAGGER_SECURITY_SCHEMA
+import com.qtd.config.SWAGGER_SECURITY_SCHEMA
 import com.qtd.modules.BaseResponse
 import com.qtd.modules.BaseResponse.Companion.created
 import com.qtd.modules.BaseResponse.Companion.success
@@ -28,67 +28,37 @@ import org.koin.ktor.ext.inject
 fun Route.conversation() {
     val conversationService: ConversationService by inject()
 
-    route("/conversations", {
-        tags = listOf("Conversation")
-        securitySchemeName = SWAGGER_SECURITY_SCHEMA
-    }) {
-
+    route("/conversations", conversationsDocs) {
         authenticate("jwt") {
-
-            post("", {
-                description = "Create conversation"
-                response {
-                    HttpStatusCode.Created to {
-                        class ConversationResponseType : BaseResponse<ConversationResponse>()
-                        body(ConversationResponseType::class)
-                    }
-                }
-            }) {
+            post(createConversationDoc) {
                 val conversation = conversationService.createConversation(call.userId())
                 call.baseRespond(created(conversation))
             }
 
-            get("", {
-                description = "Get conversations"
-                response {
-                    HttpStatusCode.OK to {
-                        class ConversationResponseType : BaseResponse<ConversationResponse>()
-                        body(ConversationResponseType::class)
-                    }
-                }
-            }) {
+            get(getListConversationsDoc) {
                 val conversationList = conversationService.getConversations(call.userId())
                 call.baseRespond(success(conversationList))
             }
 
-            delete("", {
-                description = "Delete conversations"
-                response {
-                    HttpStatusCode.OK to {
-                        class SuccessType : BaseResponse<Any>()
-                        body(SuccessType::class)
-                    }
-                }
-            }) {
+            delete(deleteAllConversationsDoc) {
                 conversationService.deleteConversations(call.userId())
                 call.baseRespond(success())
             }
 
             route("/{conversationId}") {
-
-                delete {
+                delete(deleteSingleConversationDoc) {
                     conversationService.deleteConversation(call.userId(), call.parameters["conversationId"]!!)
                     call.baseRespond(success())
                 }
 
                 route("/messages") {
-                    get {
+                    get(getAllMessagesOfConversationDoc) {
                         val messages =
                             conversationService.getMessages(call.userId(), call.parameters["conversationId"]!!)
                         call.baseRespond(success(messages))
                     }
 
-                    post {
+                    post(sendNewMessageDoc) {
                         val message = call.receive<PostChat>()
                         val response = conversationService.postMessage(
                             call.userId(), call.parameters["conversationId"]!!, message.content
@@ -96,7 +66,7 @@ fun Route.conversation() {
                         call.respond(success(response))
                     }
 
-                    post("/stream") {
+                    post("/stream", sendNewMessageStreamDoc) {
                         val message = call.receive<PostChat>()
                         val response = conversationService.postMessageStream(
                             call.userId(), call.parameters["conversationId"]!!, message.content
@@ -104,7 +74,7 @@ fun Route.conversation() {
                         call.respondSse(response)
                     }
 
-                    delete("/{messageId}") {
+                    delete("/{messageId}", deleteSingleMessageDoc) {
                         conversationService.deleteMessage(
                             call.userId(), call.parameters["conversationId"]!!, call.parameters["messageId"]!!
                         )
