@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.qtd"
-version = "1.2.0"
+version = "1.3.0"
 
 application {
     mainClass.set("com.qtd.ApplicationKt")
