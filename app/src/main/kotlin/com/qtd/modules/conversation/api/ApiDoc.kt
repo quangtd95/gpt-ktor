@@ -79,7 +79,7 @@ val sendNewMessageDoc: ApiDoc = {
     }
     response {
         HttpStatusCode.OK to {
-            class SendNewMessageDocType : BaseResponse<ConversationMessageResponse>()
+            class SendNewMessageDocType : BaseResponse<List<ConversationMessageResponse>>()
             body(SendNewMessageDocType::class)
         }
     }

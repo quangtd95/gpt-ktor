@@ -78,17 +78,20 @@ object ConversationService : BaseService(), IConversationService {
 
     override suspend fun postMessage(
         userId: String, conversationId: String, content: String
-    ): ConversationMessageResponse {
+    ): List<ConversationMessageResponse> {
 
         val conversation = getConversation(userId, conversationId)
 
-        conversation.addNewUserMessage(content)
+        val userMessage = conversation.addNewUserMessage(content)
 
         val response = chatService.chat(conversation.getLastMessages().map { Message(it.role, it.content) })
 
         val assistantMessage = conversation.addNewAssistantMessage(response)
 
-        return ConversationMessageResponse.fromConversationMessage(assistantMessage)
+        return listOf(
+            ConversationMessageResponse.fromConversationMessage(userMessage),
+            ConversationMessageResponse.fromConversationMessage(assistantMessage)
+        )
     }
 
     override suspend fun postMessageStream(
@@ -157,6 +160,6 @@ interface IConversationService {
 
     suspend fun getMessages(userId: String, conversationId: String): List<ConversationMessageResponse>
     suspend fun deleteMessage(userId: String, conversationId: String, messageId: String): Boolean
-    suspend fun postMessage(userId: String, conversationId: String, content: String): ConversationMessageResponse
+    suspend fun postMessage(userId: String, conversationId: String, content: String): List<ConversationMessageResponse>
     suspend fun postMessageStream(userId: String, conversationId: String, content: String): Flow<String>
 }
