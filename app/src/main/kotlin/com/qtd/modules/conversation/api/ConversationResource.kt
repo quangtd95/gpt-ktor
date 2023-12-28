@@ -1,14 +1,12 @@
 package com.qtd.modules.conversation.api
 
-import com.qtd.config.SWAGGER_SECURITY_SCHEMA
-import com.qtd.modules.BaseResponse
 import com.qtd.modules.BaseResponse.Companion.created
 import com.qtd.modules.BaseResponse.Companion.success
 import com.qtd.modules.baseRespond
-import com.qtd.modules.conversation.dto.ConversationResponse
 import com.qtd.modules.conversation.dto.PostChat
 import com.qtd.modules.conversation.service.ConversationService
-import com.qtd.utils.userId
+import com.qtd.utils.*
+import com.qtd.utils.Constants.JWT_AUTH
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
@@ -29,7 +27,7 @@ fun Route.conversation() {
     val conversationService: ConversationService by inject()
 
     route("/conversations", conversationsDocs) {
-        authenticate("jwt") {
+        authenticate(JWT_AUTH) {
             post(createConversationDoc) {
                 val conversation = conversationService.createConversation(call.userId())
                 call.baseRespond(created(conversation))
@@ -47,21 +45,21 @@ fun Route.conversation() {
 
             route("/{conversationId}") {
                 delete(deleteSingleConversationDoc) {
-                    conversationService.deleteConversation(call.userId(), call.parameters["conversationId"]!!)
+                    conversationService.deleteConversation(call.userId(), call.conversationId())
                     call.baseRespond(success())
                 }
 
                 route("/messages") {
                     get(getAllMessagesOfConversationDoc) {
                         val messages =
-                            conversationService.getMessages(call.userId(), call.parameters["conversationId"]!!)
+                            conversationService.getMessages(call.userId(), call.conversationId())
                         call.baseRespond(success(messages))
                     }
 
                     post(sendNewMessageDoc) {
                         val message = call.receive<PostChat>()
                         val response = conversationService.postMessage(
-                            call.userId(), call.parameters["conversationId"]!!, message.content
+                            call.userId(), call.conversationId(), message.content
                         )
                         call.respond(success(response))
                     }
@@ -69,14 +67,14 @@ fun Route.conversation() {
                     post("/stream", sendNewMessageStreamDoc) {
                         val message = call.receive<PostChat>()
                         val response = conversationService.postMessageStream(
-                            call.userId(), call.parameters["conversationId"]!!, message.content
+                            call.userId(), call.conversationId(), message.content
                         )
                         call.respondSse(response)
                     }
 
                     delete("/{messageId}", deleteSingleMessageDoc) {
                         conversationService.deleteMessage(
-                            call.userId(), call.parameters["conversationId"]!!, call.parameters["messageId"]!!
+                            call.userId(), call.conversationId(), call.messageId()
                         )
                         call.baseRespond(success())
                     }

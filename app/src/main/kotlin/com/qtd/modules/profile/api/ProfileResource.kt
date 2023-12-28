@@ -1,11 +1,13 @@
 package com.qtd.modules.profile.api
 
-import com.qtd.config.SWAGGER_SECURITY_SCHEMA
 import com.qtd.modules.BaseResponse.Companion.success
 import com.qtd.modules.baseRespond
 import com.qtd.modules.profile.service.IProfileService
+import com.qtd.utils.Constants.JWT_AUTH
 import com.qtd.utils.param
 import com.qtd.utils.userId
+import com.qtd.utils.userIdOrNull
+import com.qtd.utils.username
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
@@ -13,7 +15,6 @@ import io.github.smiley4.ktorswaggerui.dsl.route
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
-
 import org.koin.ktor.ext.inject
 
 fun Route.profile() {
@@ -21,26 +22,26 @@ fun Route.profile() {
 
     route("/profiles", profilesDoc) {
         route("/{username}") {
-            authenticate("jwt", optional = true) {
+            authenticate(JWT_AUTH, optional = true) {
                 get(getProfileDoc) {
-                    val username = call.param("username")
-                    val currentUserId = call.principal<UserIdPrincipal>()?.name
+                    val username = call.username()
+                    val currentUserId = call.userIdOrNull()
                     val profile = profileService.getProfile(username, currentUserId)
                     call.baseRespond(success(profile))
                 }
             }
 
-            authenticate("jwt") {
+            authenticate(JWT_AUTH) {
                 route("/follow", followDoc) {
                     post(postFollowProfileDoc) {
-                        val username = call.param("username")
+                        val username = call.username()
                         val currentUserId = call.userId()
                         val profile = profileService.changeFollowStatus(username, currentUserId, true)
                         call.baseRespond(success(profile))
                     }
 
                     delete(deleteFollowProfileDoc) {
-                        val username = call.param("username")
+                        val username = call.username()
                         val currentUserId = call.userId()
                         val profile = profileService.changeFollowStatus(username, currentUserId, false)
                         call.baseRespond(success(profile))

@@ -7,6 +7,7 @@ import com.qtd.modules.auth.dto.RefreshTokenRequest
 import com.qtd.modules.auth.dto.RegisterUserRequest
 import com.qtd.modules.auth.service.IAuthService
 import com.qtd.modules.baseRespond
+import com.qtd.utils.Constants.JWT_AUTH
 import com.qtd.utils.userId
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.post
@@ -39,7 +40,7 @@ fun Route.auth() {
             call.baseRespond(success(userCredentials))
         }
 
-        authenticate("jwt") {
+        authenticate(JWT_AUTH) {
             delete("/logout", logoutDoc) {
                 authService.logout(call.userId())
                 call.baseRespond(success())

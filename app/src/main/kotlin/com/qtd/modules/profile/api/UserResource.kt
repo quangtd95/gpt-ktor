@@ -5,6 +5,7 @@ import com.qtd.modules.auth.dto.UpdateUserRequest
 import com.qtd.modules.auth.dto.UserResponse
 import com.qtd.modules.auth.service.IAuthService
 import com.qtd.modules.baseRespond
+import com.qtd.utils.Constants.JWT_AUTH
 import com.qtd.utils.userId
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.put
@@ -18,7 +19,7 @@ import org.koin.ktor.ext.inject
 fun Route.user() {
     val authService: IAuthService by inject()
 
-    authenticate("jwt") {
+    authenticate(JWT_AUTH) {
         route("/users", usersDoc) {
             get(getListUsersDoc) {
                 val users = authService.getAllUsers()
