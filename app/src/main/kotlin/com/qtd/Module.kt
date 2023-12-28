@@ -9,6 +9,7 @@ import com.qtd.config.statusPages
 import com.qtd.modules.api
 import com.qtd.modules.auth.config.jwtConfig
 import com.qtd.modules.database.IDatabaseProvider
+import com.qtd.modules.database.IESProvider
 import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
@@ -27,7 +28,10 @@ fun Application.module() {
     val config: ApplicationConfig by inject()
     val tokenJWTVerifier: JWTVerifier by inject()
     val databaseProvider: IDatabaseProvider by inject()
+    val esProvider: IESProvider by inject()
+
     databaseProvider.init()
+    esProvider.init()
 
     install(DefaultHeaders)
     install(CORS) {

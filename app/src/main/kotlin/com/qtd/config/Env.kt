@@ -4,6 +4,8 @@ import com.qtd.modules.auth.config.JwtConfig
 import com.qtd.modules.auth.config.JwtConfigBuilder
 import com.qtd.modules.database.config.DatabaseConfigBuilder
 import com.qtd.modules.database.config.DatabaseConfig
+import com.qtd.modules.database.config.ESConfig
+import com.qtd.modules.database.config.ESConfigBuilder
 import com.qtd.modules.openai.config.OpenAiConfig
 import com.qtd.modules.openai.config.OpenAiConfigBuilder
 
@@ -11,6 +13,7 @@ data class ApplicationConfig(
     val serverConfig: ServerConfig,
     val jwtConfig: JwtConfig,
     val databaseConfig: DatabaseConfig,
+    val esConfig: ESConfig,
     val openAiConfig: OpenAiConfig,
 )
 
@@ -18,6 +21,7 @@ class ApplicationConfigBuilder {
     private lateinit var serverConfig: ServerConfig
     private lateinit var jwtConfig: JwtConfig
     private lateinit var databaseConfig: DatabaseConfig
+    private lateinit var esConfig: ESConfig
     private lateinit var openAiConfig: OpenAiConfig
 
     fun server(block: ServerConfigBuilder.() -> Unit) {
@@ -28,6 +32,10 @@ class ApplicationConfigBuilder {
         jwtConfig = JwtConfigBuilder().apply(block).build()
     }
 
+    fun es(block: ESConfigBuilder.() -> Unit) {
+        esConfig = ESConfigBuilder().apply(block).build()
+    }
+
     fun database(block: DatabaseConfigBuilder.() -> Unit) {
         databaseConfig = DatabaseConfigBuilder().apply(block).build()
     }
@@ -36,7 +44,7 @@ class ApplicationConfigBuilder {
         openAiConfig = OpenAiConfigBuilder().apply(block).build()
     }
 
-    fun build(): ApplicationConfig = ApplicationConfig(serverConfig, jwtConfig, databaseConfig, openAiConfig)
+    fun build(): ApplicationConfig = ApplicationConfig(serverConfig, jwtConfig, databaseConfig, esConfig, openAiConfig)
 }
 
 data class ServerConfig(

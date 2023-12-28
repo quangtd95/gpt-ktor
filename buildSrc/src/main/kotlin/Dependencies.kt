@@ -11,5 +11,6 @@ object Dependencies {
         const val OPENAI_CLIENT_VERSION = "3.6.2"
         const val KOIN_VERSION = "3.4.0"
         const val KTOR_SWAGGER_UI_VERSION = "2.7.2"
+        const val KT_ES_VERSION = "2.1.10"
     }
 }

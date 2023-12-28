@@ -4,6 +4,7 @@ import Dependencies.Versions.JBCRYPT_VERSION
 import Dependencies.Versions.KOIN_VERSION
 import Dependencies.Versions.KTOR_SWAGGER_UI_VERSION
 import Dependencies.Versions.KTOR_VERSION
+import Dependencies.Versions.KT_ES_VERSION
 import Dependencies.Versions.LOGBACK_VERSION
 import Dependencies.Versions.OPENAI_CLIENT_VERSION
 import Dependencies.Versions.POSTGRESQL_VERSION
@@ -26,6 +27,12 @@ application {
 
 repositories {
     mavenCentral()
+    maven("https://maven.tryformation.com/releases") {
+        content {
+            includeGroup("com.jillesvangurp")
+        }
+    }
+
 }
 
 dependencies {
@@ -70,4 +77,7 @@ dependencies {
 
     // ------------------------ktor-swagger-ui------------------------
     implementation("io.github.smiley4:ktor-swagger-ui:$KTOR_SWAGGER_UI_VERSION")
+
+    // ------------------------kotlin-search-client------------------------
+    implementation("com.jillesvangurp:search-client:$KT_ES_VERSION")
 }

@@ -25,6 +25,16 @@ fun extractConfig(hoconConfig: HoconApplicationConfig) = config {
         }
     }
 
+    es {
+        with(hoconConfig.config("es")) {
+            host = property("host").getString()
+            port = property("port").getString().toInt()
+            user = property("user").getString()
+            password = property("password").getString()
+            https = property("https").getString().toBoolean()
+        }
+    }
+
     openai {
         with(hoconConfig.config("openai")) {
             token = property("token").getString()
