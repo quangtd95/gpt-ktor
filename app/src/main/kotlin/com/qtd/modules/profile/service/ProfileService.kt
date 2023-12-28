@@ -5,6 +5,7 @@ import com.qtd.exception.UserDoesNotExistsException
 import com.qtd.modules.auth.model.User
 import com.qtd.modules.auth.service.getUser
 import com.qtd.modules.profile.model.ProfileResponse
+import com.qtd.utils.unless
 import org.jetbrains.exposed.sql.SizedCollection
 
 interface IProfileService {
@@ -35,7 +36,7 @@ class ProfileService : BaseService(), IProfileService {
     }
 
     private fun addFollower(user: User, newFollower: User) {
-        if (!isFollower(user, newFollower)) {
+        unless(isFollower(user, newFollower)) {
             user.followers = SizedCollection(user.followers + newFollower)
         }
     }

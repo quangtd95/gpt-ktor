@@ -5,6 +5,7 @@ import com.jillesvangurp.ktsearch.SearchClient
 import com.jillesvangurp.ktsearch.createIndex
 import com.jillesvangurp.ktsearch.exists
 import com.qtd.config.ApplicationConfig
+import com.qtd.utils.unless
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
@@ -32,11 +33,12 @@ class ESProvider : IESProvider, KoinComponent {
 
     override fun init() {
         runBlocking(Dispatchers.IO) {
-            if (!client.exists("ktor")) {
+            unless(client.exists("ktor")) {
                 client.createIndex("ktor")
             }
         }
     }
+
 
     override suspend fun <T> dbQuery(block: () -> T): T {
         TODO()

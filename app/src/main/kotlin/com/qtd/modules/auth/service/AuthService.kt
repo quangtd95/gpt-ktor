@@ -9,6 +9,7 @@ import com.qtd.exception.RefreshTokenInvalidException
 import com.qtd.exception.UserDoesNotExistsException
 import com.qtd.exception.UserExistsException
 import com.qtd.modules.auth.model.*
+import com.qtd.utils.unless
 import org.koin.core.component.inject
 import java.util.*
 
@@ -84,7 +85,7 @@ class AuthService : BaseService(), IAuthService {
          */
         tokenService.verifyRefreshToken(refreshToken)?.let { userId ->
             dbQuery {
-                if (!refreshTokenDao.verifyToken(refreshToken)) {
+                unless (refreshTokenDao.verifyToken(refreshToken)) {
                     throw RefreshTokenInvalidException()
                 }
             }

@@ -1,6 +1,7 @@
 package com.qtd.modules.auth.service
 
 import com.qtd.exception.BadRequestException
+import com.qtd.utils.unless
 import org.mindrot.jbcrypt.BCrypt
 import java.security.SecureRandom
 import kotlin.random.asKotlinRandom
@@ -32,16 +33,16 @@ object PasswordService : IPasswordService {
         val hasNumber = password.any { it in numbers }
         val hasSpecial = password.any { it in specials }
 
-        if (!hasLetter) {
+        unless(hasLetter) {
             throw BadRequestException("Password must contain at least one letter")
         }
-        if (!hasUppercase) {
+        unless(hasUppercase) {
             throw BadRequestException("Password must contain at least one uppercase letter")
         }
-        if (!hasNumber) {
+        unless(hasNumber) {
             throw BadRequestException("Password must contain at least one number")
         }
-        if (!hasSpecial) {
+        unless(hasSpecial) {
             throw BadRequestException("Password must contain at least one special character")
         }
         if (password.length < 6) {
