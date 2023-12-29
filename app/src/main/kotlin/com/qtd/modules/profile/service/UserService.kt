@@ -14,7 +14,6 @@ interface IUserService {
 }
 
 class UserService : BaseService(), IUserService {
-    private val userDao by inject<IUserDao>()
 
     override suspend fun getUserById(id: String) = dbQuery { getUser(id) }
 

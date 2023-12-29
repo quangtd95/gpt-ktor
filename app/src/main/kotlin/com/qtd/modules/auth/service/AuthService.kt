@@ -1,14 +1,16 @@
 package com.qtd.modules.auth.service
 
 import com.qtd.common.BaseService
-import com.qtd.modules.auth.dto.RegisterUserRequest
-import com.qtd.modules.auth.dto.UpdateUserRequest
-import com.qtd.modules.auth.dto.UserCredentialsResponse
 import com.qtd.exception.LoginCredentialsInvalidException
 import com.qtd.exception.RefreshTokenInvalidException
 import com.qtd.exception.UserDoesNotExistsException
 import com.qtd.exception.UserExistsException
-import com.qtd.modules.auth.model.*
+import com.qtd.modules.auth.dto.RegisterUserRequest
+import com.qtd.modules.auth.dto.UserCredentialsResponse
+import com.qtd.modules.auth.model.IRefreshTokenDao
+import com.qtd.modules.auth.model.IUserDao
+import com.qtd.modules.auth.model.User
+import com.qtd.modules.auth.model.Users
 import com.qtd.utils.unless
 import org.koin.core.component.inject
 import java.util.*
@@ -19,8 +21,6 @@ interface IAuthService {
     suspend fun refresh(refreshToken: String): UserCredentialsResponse
 
     suspend fun getUserById(id: String): User
-    suspend fun updateUser(id: String, updateUser: UpdateUserRequest): User
-    suspend fun getAllUsers(): List<User>
     suspend fun logout(userId: String)
 }
 
@@ -85,7 +85,7 @@ class AuthService : BaseService(), IAuthService {
          */
         tokenService.verifyRefreshToken(refreshToken)?.let { userId ->
             dbQuery {
-                unless (refreshTokenDao.verifyToken(refreshToken)) {
+                unless(refreshTokenDao.verifyToken(refreshToken)) {
                     throw RefreshTokenInvalidException()
                 }
             }
@@ -109,24 +109,11 @@ class AuthService : BaseService(), IAuthService {
 
     override suspend fun getUserById(id: String) = dbQuery { getUser(id) }
 
-    override suspend fun updateUser(id: String, updateUser: UpdateUserRequest) = dbQuery {
-        getUser(id).apply {
-            email = updateUser.user.email ?: email
-            password = updateUser.user.password ?: password
-            username = updateUser.user.username ?: username
-            image = updateUser.user.image ?: image
-            bio = updateUser.user.bio ?: bio
-        }
-    }
-
-    override suspend fun getAllUsers() = dbQuery { User.all().toList() }
-
     override suspend fun logout(userId: String) {
         dbQuery {
             refreshTokenDao.revokeAllTokens(UUID.fromString(userId))
         }
     }
-
 }
 
 fun getUser(id: String) = User.findById(UUID.fromString(id)) ?: throw UserDoesNotExistsException()
