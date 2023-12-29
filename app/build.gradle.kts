@@ -74,6 +74,7 @@ dependencies {
 
     // ------------------------koin------------------------
     implementation("io.insert-koin:koin-ktor:$KOIN_VERSION")
+    implementation("io.insert-koin:koin-logger-slf4j:$KOIN_VERSION")
 
     // ------------------------ktor-swagger-ui------------------------
     implementation("io.github.smiley4:ktor-swagger-ui:$KTOR_SWAGGER_UI_VERSION")
