@@ -1,4 +1,4 @@
-package com.qtd.modules
+package com.qtd.common
 
 import com.qtd.modules.database.IDatabaseProvider
 import org.koin.core.component.KoinComponent

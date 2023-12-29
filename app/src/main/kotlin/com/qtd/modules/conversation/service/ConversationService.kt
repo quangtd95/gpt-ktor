@@ -1,8 +1,8 @@
 package com.qtd.modules.conversation.service
 
 import com.qtd.config.ApplicationConfig
-import com.qtd.exception.BadRequestException
-import com.qtd.modules.BaseService
+import com.qtd.exception.WrongRequestException
+import com.qtd.common.BaseService
 import com.qtd.modules.conversation.dto.ConversationMessageResponse
 import com.qtd.modules.conversation.dto.ConversationResponse
 import com.qtd.modules.conversation.model.Conversation
@@ -119,7 +119,7 @@ object ConversationService : BaseService(), IConversationService {
     private suspend fun getConversation(userId: String, conversationId: String) = dbQuery {
         Conversation.find {
             Conversations.userId eq UUID.fromString(userId) and (Conversations.id eq UUID.fromString(conversationId))
-        }.firstOrNull() ?: throw BadRequestException(
+        }.firstOrNull() ?: throw WrongRequestException(
             "Conversation not found",
             mapOf("conversationId" to conversationId)
         )

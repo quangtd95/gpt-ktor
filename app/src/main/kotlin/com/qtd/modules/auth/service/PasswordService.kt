@@ -1,6 +1,6 @@
 package com.qtd.modules.auth.service
 
-import com.qtd.exception.BadRequestException
+import com.qtd.exception.WrongRequestException
 import com.qtd.utils.unless
 import org.mindrot.jbcrypt.BCrypt
 import java.security.SecureRandom
@@ -34,19 +34,19 @@ object PasswordService : IPasswordService {
         val hasSpecial = password.any { it in specials }
 
         unless(hasLetter) {
-            throw BadRequestException("Password must contain at least one letter")
+            throw WrongRequestException("Password must contain at least one letter")
         }
         unless(hasUppercase) {
-            throw BadRequestException("Password must contain at least one uppercase letter")
+            throw WrongRequestException("Password must contain at least one uppercase letter")
         }
         unless(hasNumber) {
-            throw BadRequestException("Password must contain at least one number")
+            throw WrongRequestException("Password must contain at least one number")
         }
         unless(hasSpecial) {
-            throw BadRequestException("Password must contain at least one special character")
+            throw WrongRequestException("Password must contain at least one special character")
         }
         if (password.length < 6) {
-            throw BadRequestException("Password must be at least 6 characters long")
+            throw WrongRequestException("Password must be at least 6 characters long")
         }
         return true
     }

@@ -3,7 +3,7 @@ package com.qtd.modules.auth.api
 import com.qtd.config.ApiDoc
 import com.qtd.config.SWAGGER_SECURITY_SCHEMA
 import com.qtd.config.TAG_AUTH
-import com.qtd.modules.BaseResponse
+import com.qtd.common.BaseResponse
 import com.qtd.modules.auth.dto.LoginUserRequest
 import com.qtd.modules.auth.dto.RefreshTokenRequest
 import com.qtd.modules.auth.dto.RegisterUserRequest

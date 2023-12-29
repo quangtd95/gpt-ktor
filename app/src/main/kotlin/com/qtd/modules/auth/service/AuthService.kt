@@ -1,6 +1,6 @@
 package com.qtd.modules.auth.service
 
-import com.qtd.modules.BaseService
+import com.qtd.common.BaseService
 import com.qtd.modules.auth.dto.RegisterUserRequest
 import com.qtd.modules.auth.dto.UpdateUserRequest
 import com.qtd.modules.auth.dto.UserCredentialsResponse

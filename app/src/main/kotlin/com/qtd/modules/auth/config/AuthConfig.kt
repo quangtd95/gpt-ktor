@@ -1,7 +1,7 @@
 package com.qtd.modules.auth.config
 
 import com.auth0.jwt.interfaces.JWTVerifier
-import com.qtd.modules.BaseResponse
+import com.qtd.common.BaseResponse
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*

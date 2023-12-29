@@ -3,7 +3,7 @@ package com.qtd.modules.conversation.api
 import com.qtd.config.ApiDoc
 import com.qtd.config.SWAGGER_SECURITY_SCHEMA
 import com.qtd.config.TAG_CONVERSATION
-import com.qtd.modules.BaseResponse
+import com.qtd.common.BaseResponse
 import com.qtd.modules.conversation.dto.ConversationMessageResponse
 import com.qtd.modules.conversation.dto.ConversationResponse
 import com.qtd.modules.conversation.dto.PostChat

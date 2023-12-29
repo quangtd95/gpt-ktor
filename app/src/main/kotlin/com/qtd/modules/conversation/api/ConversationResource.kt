@@ -1,8 +1,8 @@
 package com.qtd.modules.conversation.api
 
-import com.qtd.modules.BaseResponse.Companion.created
-import com.qtd.modules.BaseResponse.Companion.success
-import com.qtd.modules.baseRespond
+import com.qtd.common.BaseResponse.Companion.created
+import com.qtd.common.BaseResponse.Companion.success
+import com.qtd.common.baseRespond
 import com.qtd.modules.conversation.dto.PostChat
 import com.qtd.modules.conversation.service.ConversationService
 import com.qtd.utils.*

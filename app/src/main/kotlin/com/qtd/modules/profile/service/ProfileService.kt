@@ -1,6 +1,6 @@
 package com.qtd.modules.profile.service
 
-import com.qtd.modules.BaseService
+import com.qtd.common.BaseService
 import com.qtd.exception.UserDoesNotExistsException
 import com.qtd.modules.auth.model.User
 import com.qtd.modules.auth.service.getUser

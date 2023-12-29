@@ -1,10 +1,9 @@
 package com.qtd.modules.profile.api
 
-import com.qtd.modules.BaseResponse.Companion.success
-import com.qtd.modules.baseRespond
+import com.qtd.common.BaseResponse.Companion.success
+import com.qtd.common.baseRespond
 import com.qtd.modules.profile.service.IProfileService
 import com.qtd.utils.Constants.JWT_AUTH
-import com.qtd.utils.param
 import com.qtd.utils.userId
 import com.qtd.utils.userIdOrNull
 import com.qtd.utils.username

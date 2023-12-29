@@ -1,6 +1,6 @@
 package com.qtd.modules.auth.model
 
-import com.qtd.exception.BadRequestException
+import com.qtd.exception.WrongRequestException
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -28,7 +28,7 @@ object Users : UUIDTable(), IUserDao {
 
         //throw error if both are null
         if (email == null && username == null) {
-            throw BadRequestException("email and username cannot be null")
+            throw WrongRequestException("email and username cannot be null")
         }
         User.find {
             (if (username != null) {

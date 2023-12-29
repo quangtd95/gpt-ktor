@@ -1,4 +1,4 @@
-package com.qtd.modules
+package com.qtd.common
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude

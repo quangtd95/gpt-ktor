@@ -3,7 +3,11 @@ package com.qtd.modules.conversation.dto
 import com.qtd.modules.conversation.model.Conversation
 import com.qtd.modules.conversation.model.ConversationMessage
 
-data class PostChat(val content: String)
+data class PostChat(val content: String) {
+    init {
+        require(content.isNotBlank()) { "content cannot be blank" }
+    }
+}
 
 data class ConversationResponse(val conversation: ConversationDto) {
     data class ConversationDto(

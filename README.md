@@ -10,7 +10,7 @@ This project is a web backend application that demonstrates the use of the KTor 
 ## Getting Started
 1. **Clone the repository**: Use your preferred method to clone the repository to your local machine.
 2. **Open the project in IntelliJ IDEA**: Import the project into IntelliJ IDEA. Make sure you have the latest version installed.
-3. **Install Java 11**: This project requires Java 11. If you don't have it installed, you can download it from the official Oracle website.
+3. **Install Java 17**: This project requires Java 17. If you don't have it installed, you can download it from the official Oracle website.
 4. **Build the project with Gradle**: This project uses the Gradle Kotlin DSL for managing project dependencies and for building. You can build the project using the `gradlew build` command in the terminal.
 5. **Run the application**: After building the project, you can run the application.
 

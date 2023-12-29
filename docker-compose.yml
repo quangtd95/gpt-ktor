@@ -10,10 +10,17 @@ services:
     environment:
       - OPENAI_TOKEN=${OPENAI_TOKEN}
       - DATABASE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}?user=${POSTGRES_PASSWORD}&password=${POSTGRES_USER}
+      - ES_HOST=${ES_HOST}
+      - ES_PORT=${ES_PORT}
+      - ES_USER=${ES_USER}
+      - ES_PASSWORD=${ES_PASSWORD}
+      - ES_HTTPS = ${ES_HTTPS}
     ports:
       - "8989:8989"
     depends_on:
       db:
+        condition: service_healthy
+      elasticsearch:
         condition: service_healthy
   db:
     environment:
@@ -29,3 +36,27 @@ services:
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U gpt" ]
       interval: 1s
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.0
+    environment:
+      - xpack.security.enabled=true
+      - "discovery.type=single-node"
+      - ELASTIC_PASSWORD=${ES_PASSWORD}
+    ports:
+      - "${ES_PORT}:${ES_PORT}"
+    healthcheck:
+      test: curl -s http://elasticsearch:9200 >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 50
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.16.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:${ES_PORT}
+      - ELASTICSEARCH_USERNAME=${ES_USER}
+      - ELASTICSEARCH_PASSWORD=${ES_PASSWORD}
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
